@@ -21,10 +21,7 @@
         body.light { background: #f5f7fa; color: #1e293b; }
         body.gray  { background: #2d2f36; color: #e2e8f0; }
 
-        .container {
-            max-width: 550px;
-            margin: 0 auto;
-        }
+        .container { max-width: 550px; margin: 0 auto; }
         .card {
             background: #1e1f23;
             border-radius: 32px;
@@ -35,7 +32,6 @@
         body.light .card { background: white; }
         body.gray .card  { background: #3a3c44; }
 
-        /* ПРОФИЛЬ */
         .balance-row {
             display: flex;
             justify-content: space-between;
@@ -51,10 +47,7 @@
             font-weight: bold;
             font-size: 1.3rem;
         }
-        .currency-switch {
-            display: flex;
-            gap: 10px;
-        }
+        .currency-switch { display: flex; gap: 10px; }
         .currency-btn {
             background: none;
             border: 1px solid currentColor;
@@ -87,7 +80,6 @@
         }
         .action-btn:active { transform: scale(0.97); }
 
-        /* ВЫБОР ИГРЫ */
         .game-buttons {
             display: flex;
             flex-direction: column;
@@ -106,7 +98,6 @@
         }
         .game-choice-btn:active { transform: scale(0.98); }
 
-        /* СТРАНИЦА ИГРЫ */
         .game-page {
             position: fixed;
             top: 0;
@@ -138,12 +129,8 @@
             cursor: pointer;
             color: white;
         }
-        .game-title {
-            font-size: 1.8rem;
-            font-weight: bold;
-        }
+        .game-title { font-size: 1.8rem; font-weight: bold; }
 
-        /* ОБЩИЕ ЭЛЕМЕНТЫ */
         .difficulty-group {
             display: flex;
             gap: 12px;
@@ -159,10 +146,7 @@
             cursor: pointer;
             color: white;
         }
-        .diff-btn.active {
-            background: gold;
-            color: black;
-        }
+        .diff-btn.active { background: gold; color: black; }
         .bet-control {
             display: flex;
             gap: 12px;
@@ -186,46 +170,53 @@
             cursor: pointer;
             color: white;
         }
-        .crash-start-margin {
-            margin-top: 16px;
+        .crash-start-margin { margin-top: 16px; }
+
+        /* ЛЕСТНИЦА (ВИЗУАЛЬНАЯ) */
+        .ladder-floor {
+            background: #2f3136;
+            border-radius: 60px;
+            padding: 10px;
+            margin: 8px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         .ladder-buttons {
             display: flex;
             gap: 15px;
             justify-content: center;
-            margin: 25px 0;
             flex-wrap: wrap;
+            margin: 20px 0;
         }
         .ladder-btn {
             background: #2c3e66;
             border: none;
             border-radius: 60px;
-            padding: 15px 20px;
+            padding: 12px 18px;
             font-size: 1.2rem;
             font-weight: bold;
             cursor: pointer;
             color: white;
             min-width: 70px;
         }
-        .ladder-step {
+        .ladder-visual {
+            font-size: 1rem;
+            margin: 8px 0;
+            padding: 8px;
+            background: #1e1f23;
+            border-radius: 40px;
             text-align: center;
-            font-size: 2rem;
-            margin: 15px 0;
-            background: #2f3136;
-            padding: 12px;
-            border-radius: 60px;
         }
+        .ladder-status { text-align: center; margin: 15px 0; font-size: 1.2rem; }
+
         .crash-number {
             font-size: 3rem;
             font-weight: bold;
             text-align: center;
             margin: 30px 0;
         }
-        .win-text {
-            text-align: center;
-            margin: 15px 0;
-            font-size: 1.2rem;
-        }
+        .win-text { text-align: center; margin: 15px 0; font-size: 1.2rem; }
         .grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -246,16 +237,29 @@
         body.light .cell { background: #cbd5e1; }
         .cell.revealed-star { background: #1f4d2e; cursor: default; }
         .cell.mine { background: #9b2c2c; }
-        .ladder-visual {
+
+        .settings-panel {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            gap: 10px;
-            font-size: 2rem;
-            background: #2f3136;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .theme-btns { display: flex; gap: 8px; }
+        .theme-btn {
+            background: #2c3e66;
+            border: none;
             border-radius: 60px;
             padding: 8px 20px;
-            margin: 10px 0;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+        }
+        .theme-btn.active { background: gold; color: black; }
+        .vibration-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
     </style>
 </head>
@@ -270,7 +274,7 @@
                 <button class="currency-btn" data-cur="EUR">EUR</button>
             </div>
         </div>
-        <div style="margin: 12px 0;">💳 Реальный счёт: <strong id="realBalance">0.00</strong> <span id="realCurr">RUB</span></div>
+        <div style="margin: 12px 0;">💳 Реальный счет: <strong id="realBalance">0.00</strong> <span id="realCurr">RUB</span></div>
         <div class="action-buttons">
             <button id="depositBtn" class="action-btn">💸 Пополнить</button>
             <button id="withdrawBtn" class="action-btn">🏧 Вывести</button>
@@ -284,6 +288,18 @@
             <button class="game-choice-btn" data-game="coin">🪙 МОНЕТКА</button>
         </div>
     </div>
+    <div class="card">
+        <div class="settings-panel">
+            <div class="theme-btns">
+                <button class="theme-btn" data-theme="light">🌞 Светлая</button>
+                <button class="theme-btn" data-theme="gray">🌓 Серая</button>
+                <button class="theme-btn" data-theme="dark">🌙 Тёмная</button>
+            </div>
+            <label class="vibration-label">
+                <input type="checkbox" id="vibrationToggle" checked> 📳 Вибрация
+            </label>
+        </div>
+    </div>
     <footer>⚡ OFFICIALCASUAL · Демо-режим</footer>
 </div>
 
@@ -294,19 +310,20 @@
 <div id="minesGrid" class="grid"></div><div class="win-text">💰 Выигрыш: <strong id="minesWin">0</strong></div>
 <button id="cashoutMinesBtn" style="display:none; width:100%;" class="primary-btn">✅ ЗАБРАТЬ</button><div id="minesStatus" class="win-text"></div></div></div>
 
-<!-- КРАШ (увеличен отступ кнопки) -->
+<!-- КРАШ -->
 <div id="crashPage" class="game-page"><div class="game-header"><span class="game-title">📈 КРАШ</span><button class="exit-btn" data-exit="crash">✕ Выйти</button></div>
 <div class="card"><div class="bet-control"><span>Ставка:</span><input type="number" id="crashBet" class="bet-input" value="10" step="5"><button id="startCrashBtn" class="primary-btn crash-start-margin">📈 Запустить</button></div>
 <div class="crash-number" id="crashMultiplier">1.00x</div><button id="cashoutCrashBtn" style="display:none; width:100%;" class="primary-btn">✅ ЗАБРАТЬ</button><div id="crashStatus" class="win-text"></div></div></div>
 
-<!-- ЛЕСТНИЦА (пикмен виден, не сбрасывается) -->
+<!-- ЛЕСТНИЦА (ВИЗУАЛЬНАЯ) -->
 <div id="ladderPage" class="game-page"><div class="game-header"><span class="game-title">🪜 ЛЕСТНИЦА</span><button class="exit-btn" data-exit="ladder">✕ Выйти</button></div>
 <div class="card"><div class="difficulty-group"><button class="diff-btn" data-ladder-diff="easy">🟢 Лёгкая</button><button class="diff-btn" data-ladder-diff="medium">🟡 Средняя</button><button class="diff-btn" data-ladder-diff="hard">🔴 Сложная</button></div>
 <div class="bet-control"><span>Ставка:</span><input type="number" id="ladderBet" class="bet-input" value="10" step="5"><button id="startLadderBtn" class="primary-btn">🎲 Начать подъём</button></div>
-<div id="ladderVisual" class="ladder-step"></div>
-<div id="ladderButtons" class="ladder-buttons"></div><div class="win-text">💰 Текущий выигрыш: <strong id="ladderWin">0</strong></div>
+<div id="ladderDisplay"></div>
+<div id="ladderButtons" class="ladder-buttons"></div>
+<div class="win-text">💰 Текущий выигрыш: <strong id="ladderWin">0</strong></div>
 <button id="cashoutLadderBtn" style="display:none; width:100%; margin-top:12px;" class="primary-btn">✅ ЗАБРАТЬ ПРИЗ</button>
-<div id="ladderStatus" class="win-text"></div></div></div>
+<div id="ladderStatus" class="ladder-status"></div></div></div>
 
 <!-- МОНЕТКА -->
 <div id="coinPage" class="game-page"><div class="game-header"><span class="game-title">🪙 МОНЕТКА</span><button class="exit-btn" data-exit="coin">✕ Выйти</button></div>
@@ -345,6 +362,34 @@
     document.querySelector('.currency-btn[data-cur="RUB"]').classList.add('active');
     updateUI();
 
+    // НАСТРОЙКИ
+    let settings = {
+        theme: localStorage.getItem('theme') || 'dark',
+        vibration: localStorage.getItem('vibration') !== 'false'
+    };
+    function applyTheme(theme) {
+        document.body.className = theme;
+        settings.theme = theme;
+        localStorage.setItem('theme', theme);
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            if (btn.dataset.theme === theme) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+    }
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.onclick = () => applyTheme(btn.dataset.theme);
+    });
+    const vibeToggle = document.getElementById('vibrationToggle');
+    vibeToggle.checked = settings.vibration;
+    vibeToggle.onchange = () => {
+        settings.vibration = vibeToggle.checked;
+        localStorage.setItem('vibration', settings.vibration);
+    };
+    function vibrate() {
+        if (settings.vibration && navigator.vibrate) navigator.vibrate(200);
+    }
+    applyTheme(settings.theme);
+
     // НАВИГАЦИЯ
     function showPage(pageId) {
         document.getElementById('mainPage').style.display = 'none';
@@ -364,7 +409,7 @@
         btn.onclick = () => showMain();
     });
 
-    // ========== МИНЫ (НЕ СБРАСЫВАЕТСЯ ДО НОВОЙ ИГРЫ) ==========
+    // ========== МИНЫ ==========
     let minesState = { active: false, difficulty: 'medium', board: [], revealed: [], bet: 0, currentWin: 0, gameOver: false, totalMines: 5 };
     const minesCount = { easy: 3, medium: 5, hard: 8 };
     const minesMultipliers = {
@@ -396,7 +441,7 @@
     }
     function minesMove(idx) {
         if (!minesState.active || minesState.gameOver || minesState.revealed[idx]) return;
-        if (minesState.board[idx]) { minesState.gameOver = true; minesState.active = false; document.getElementById('minesStatus').innerHTML = '💥 ВЗРЫВ! Вы проиграли.'; document.getElementById('cashoutMinesBtn').style.display = 'none'; renderMinesGrid(); return; }
+        if (minesState.board[idx]) { minesState.gameOver = true; minesState.active = false; document.getElementById('minesStatus').innerHTML = '💥 ВЗРЫВ! Вы проиграли.'; document.getElementById('cashoutMinesBtn').style.display = 'none'; vibrate(); renderMinesGrid(); return; }
         minesState.revealed[idx] = true;
         let revealedCount = minesState.revealed.filter(v => v === true).length;
         let mult = minesMultipliers[minesState.difficulty][revealedCount] || 1;
@@ -438,7 +483,7 @@
         document.getElementById('cashoutCrashBtn').style.display = 'block';
         crashInterval = setInterval(() => {
             multiplier += 0.05;
-            if (multiplier >= crashPoint) { clearInterval(crashInterval); crashInterval = null; document.getElementById('crashMultiplier').innerText = '💥 КРАШ!'; document.getElementById('cashoutCrashBtn').style.display = 'none'; document.getElementById('crashStatus').innerHTML = '💥 Проигрыш!'; return; }
+            if (multiplier >= crashPoint) { clearInterval(crashInterval); crashInterval = null; document.getElementById('crashMultiplier').innerText = '💥 КРАШ!'; document.getElementById('cashoutCrashBtn').style.display = 'none'; document.getElementById('crashStatus').innerHTML = '💥 Проигрыш!'; vibrate(); return; }
             document.getElementById('crashMultiplier').innerText = multiplier.toFixed(2) + 'x';
             document.getElementById('cashoutCrashBtn').innerText = `✅ ЗАБРАТЬ ${multiplier.toFixed(2)}x`;
         }, 150);
@@ -447,43 +492,61 @@
     document.getElementById('startCrashBtn').onclick = startCrash;
     document.getElementById('cashoutCrashBtn').onclick = cashoutCrash;
 
-    // ========== ЛЕСТНИЦА (ВИЗУАЛЬНЫЙ ПИКМЕН, НЕ СБРАСЫВАЕТСЯ) ==========
-    let ladderState = { active: false, difficulty: 'easy', bet: 0, step: 0, currentWin: 0, maxSteps: 5, gameOver: false, multipliers: { easy: [1, 1.3, 1.7, 2.2, 3, 4, 5.5, 7.5, 10, 14, 18], medium: [1, 1.4, 1.9, 2.5, 3.5, 5, 7, 10, 14, 19, 25], hard: [1, 1.6, 2.2, 3, 4.5, 6.5, 9, 13, 18, 25, 35] } };
-    function getLadderOptions() { let min = 2; let max = { easy: 4, medium: 6, hard: 8 }[ladderState.difficulty]; let options = Math.min(min + ladderState.step, max); return options; }
-    function renderLadderVisual() {
+    // ========== ЛЕСТНИЦА (ВИЗУАЛЬНАЯ) ==========
+    let ladderState = { active: false, difficulty: 'easy', bet: 0, step: 0, currentWin: 0, maxSteps: 5, gameOver: false, lastChoice: null, wasWin: false };
+    function getLadderOptions() { let min = 2; let max = { easy: 4, medium: 6, hard: 8 }[ladderState.difficulty]; return Math.min(min + ladderState.step, max); }
+    function renderLadderDisplay() {
+        const container = document.getElementById('ladderDisplay');
+        container.innerHTML = '';
         let totalSteps = { easy: 8, medium: 10, hard: 10 }[ladderState.difficulty];
-        let currentStep = ladderState.step;
-        let dead = ladderState.gameOver && !ladderState.active;
-        let won = (!ladderState.active && !ladderState.gameOver && ladderState.step > 0);
-        let message = '';
-        if (dead) message = '💀 ПИКМЕН ПОГИБ 💀';
-        else if (won) message = '🏆 ПИКМЕН ДОСТИГ ВЕРШИНЫ 🏆';
-        else message = '🧍‍♂️ ПИКМЕН ПОДНИМАЕТСЯ 🧍‍♂️';
-        let visual = `${message} | Ступень ${currentStep} / ${totalSteps} (Лестниц: ${getLadderOptions()})`;
-        document.getElementById('ladderVisual').innerHTML = visual;
+        let options = getLadderOptions();
+        for (let i = 1; i <= totalSteps; i++) {
+            let floor = document.createElement('div'); floor.className = 'ladder-floor';
+            let left = document.createElement('div'); left.style.display = 'flex'; left.style.gap = '10px';
+            for (let j = 1; j <= options; j++) {
+                let stair = document.createElement('span');
+                stair.style.fontSize = '1.6rem';
+                stair.style.width = '40px'; stair.style.textAlign = 'center';
+                if (i < ladderState.step + 1) { stair.innerText = (ladderState.lastChoice === j && ladderState.wasWin && ladderState.step === i) ? '🧍‍♂️' : '🪜'; }
+                else if (i === ladderState.step + 1 && ladderState.active && !ladderState.gameOver) { stair.innerText = (j === ladderState.lastChoice && ladderState.wasWin) ? '🧍‍♂️' : (j === ladderState.lastChoice && !ladderState.wasWin ? '👻' : '🪜'); }
+                else if (i === ladderState.step + 1 && !ladderState.active && ladderState.gameOver) { stair.innerText = (j === ladderState.lastChoice ? '👻' : '🪜'); }
+                else { stair.innerText = '🪜'; }
+                left.appendChild(stair);
+            }
+            let right = document.createElement('div');
+            right.style.fontSize = '1.2rem'; right.innerText = i === ladderState.step && !ladderState.gameOver ? '🧍‍♂️' : (i === ladderState.step && ladderState.gameOver ? '💀' : '');
+            floor.appendChild(left); floor.appendChild(right);
+            container.appendChild(floor);
+        }
     }
     function renderLadder() {
         let container = document.getElementById('ladderButtons'); container.innerHTML = '';
-        if (ladderState.active) {
+        if (ladderState.active && !ladderState.gameOver) {
             let optionsCount = getLadderOptions();
             for (let i = 1; i <= optionsCount; i++) { let btn = document.createElement('button'); btn.className = 'ladder-btn'; btn.innerText = `🪜 ${i}`; btn.onclick = () => ladderChoose(i); container.appendChild(btn); }
-        } else {
-            let btn = document.createElement('button'); btn.className = 'ladder-btn'; btn.innerText = '❌ ИГРА ОКОНЧЕНА'; container.appendChild(btn);
-        }
-        renderLadderVisual();
+        } else { let btn = document.createElement('button'); btn.className = 'ladder-btn'; btn.innerText = '❌ ИГРА ОКОНЧЕНА'; container.appendChild(btn); }
+        renderLadderDisplay();
     }
     function ladderChoose(selected) {
-        if (!ladderState.active) return;
+        if (!ladderState.active || ladderState.gameOver) return;
         let optionsCount = getLadderOptions();
         let safe = Math.floor(Math.random() * optionsCount) + 1;
-        if (selected !== safe) { ladderState.active = false; ladderState.gameOver = true; document.getElementById('ladderStatus').innerHTML = '👻 Призрак съел пикмена! Вы проиграли.'; document.getElementById('cashoutLadderBtn').style.display = 'none'; renderLadder(); return; }
-        ladderState.step++;
-        let multiplier = ladderState.multipliers[ladderState.difficulty][ladderState.step] || ladderState.multipliers[ladderState.difficulty].slice(-1)[0];
-        ladderState.currentWin = Math.floor(ladderState.bet * multiplier);
-        document.getElementById('ladderWin').innerText = ladderState.currentWin;
-        document.getElementById('cashoutLadderBtn').style.display = 'block';
-        let totalSteps = { easy: 8, medium: 10, hard: 10 }[ladderState.difficulty];
-        if (ladderState.step >= totalSteps) { demoCoins += ladderState.currentWin; saveDemoCoins(); ladderState.active = false; ladderState.gameOver = false; document.getElementById('ladderStatus').innerHTML = '🏆 ПОБЕДА! Вы достигли вершины!'; document.getElementById('cashoutLadderBtn').style.display = 'none'; }
+        let win = (selected === safe);
+        ladderState.lastChoice = selected;
+        ladderState.wasWin = win;
+        if (win) {
+            ladderState.step++;
+            let multiplier = (ladderState.multipliers[ladderState.difficulty][ladderState.step] || ladderState.multipliers[ladderState.difficulty].slice(-1)[0]);
+            ladderState.currentWin = Math.floor(ladderState.bet * multiplier);
+            document.getElementById('ladderWin').innerText = ladderState.currentWin;
+            document.getElementById('cashoutLadderBtn').style.display = 'block';
+            let totalSteps = { easy: 8, medium: 10, hard: 10 }[ladderState.difficulty];
+            if (ladderState.step >= totalSteps) { demoCoins += ladderState.currentWin; saveDemoCoins(); ladderState.active = false; ladderState.gameOver = false; document.getElementById('ladderStatus').innerHTML = '🏆 ПОБЕДА! Вы достигли вершины!'; document.getElementById('cashoutLadderBtn').style.display = 'none'; }
+            else { document.getElementById('ladderStatus').innerHTML = '✅ Поднялся! Выбери следующую лестницу.'; vibrate(); }
+        } else {
+            ladderState.active = false; ladderState.gameOver = true;
+            document.getElementById('ladderStatus').innerHTML = '👻 Призрак съел пикмена! Вы проиграли.'; document.getElementById('cashoutLadderBtn').style.display = 'none'; vibrate();
+        }
         renderLadder();
     }
     function startLadder() {
@@ -493,7 +556,11 @@
         if (bet > demoCoins) { tg.showAlert('❌ Не хватает монет'); return; }
         demoCoins -= bet; saveDemoCoins();
         let diff = document.querySelector('#ladderPage .diff-btn.active')?.dataset.ladderDiff || 'easy';
-        ladderState = { active: true, difficulty: diff, bet: bet, step: 0, currentWin: 0, gameOver: false, maxSteps: { easy: 8, medium: 10, hard: 10 }[diff], multipliers: { easy: [1, 1.3, 1.7, 2.2, 3, 4, 5.5, 7.5, 10, 14, 18], medium: [1, 1.4, 1.9, 2.5, 3.5, 5, 7, 10, 14, 19, 25], hard: [1, 1.6, 2.2, 3, 4.5, 6.5, 9, 13, 18, 25, 35] }[diff] };
+        ladderState = {
+            active: true, difficulty: diff, bet: bet, step: 0, currentWin: 0, gameOver: false, lastChoice: null, wasWin: false,
+            maxSteps: { easy: 8, medium: 10, hard: 10 }[diff],
+            multipliers: { easy: [1, 1.3, 1.7, 2.2, 3, 4, 5.5, 7.5, 10, 14, 18], medium: [1, 1.4, 1.9, 2.5, 3.5, 5, 7, 10, 14, 19, 25], hard: [1, 1.6, 2.2, 3, 4.5, 6.5, 9, 13, 18, 25, 35] }[diff]
+        };
         document.getElementById('ladderWin').innerText = '0'; document.getElementById('ladderStatus').innerHTML = '⬆️ Выбери лестницу!'; document.getElementById('cashoutLadderBtn').style.display = 'none'; renderLadder();
     }
     function cashoutLadder() { if (!ladderState.active) return; demoCoins += ladderState.currentWin; saveDemoCoins(); tg.showAlert(`✅ Вы забрали ${ladderState.currentWin} монет!`); ladderState.active = false; ladderState.gameOver = false; document.getElementById('cashoutLadderBtn').style.display = 'none'; renderLadder(); }
@@ -503,6 +570,7 @@
         btn.onclick = () => { document.querySelectorAll('#ladderPage .diff-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); if (!ladderState.active) { ladderState.difficulty = btn.dataset.ladderDiff; } };
     });
     document.querySelector('#ladderPage .diff-btn[data-ladder-diff="easy"]').classList.add('active');
+    renderLadder();
 
     // ========== МОНЕТКА ==========
     function coinPlay(choice) {
@@ -510,16 +578,11 @@
         if (isNaN(bet) || bet <= 0) bet = 10;
         if (bet > demoCoins) { tg.showAlert('❌ Не хватает монет'); return; }
         let outcome = Math.random() < 0.5 ? 'heads' : 'tails';
-        if (choice === outcome) { let win = bet * 2; demoCoins += win; saveDemoCoins(); document.getElementById('coinResult').innerHTML = `🎉 Угадал! +${win} монет.`; }
+        if (choice === outcome) { let win = bet * 2; demoCoins += win; saveDemoCoins(); document.getElementById('coinResult').innerHTML = `🎉 Угадал! +${win} монет.`; vibrate(); }
         else { demoCoins -= bet; saveDemoCoins(); document.getElementById('coinResult').innerHTML = `❌ Не угадал. Проигрыш ${bet}.`; }
     }
     document.getElementById('coinHeads').onclick = () => coinPlay('heads');
     document.getElementById('coinTails').onclick = () => coinPlay('tails');
-
-    // ТЕМЫ
-    function applyTheme(theme) { document.body.className = theme; localStorage.setItem('theme', theme); }
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    applyTheme(savedTheme);
 </script>
 </body>
 </html>
