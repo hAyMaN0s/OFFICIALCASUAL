@@ -172,36 +172,6 @@
         }
         .crash-start-margin { margin-top: 16px; }
 
-        /* ЛЕСТНИЦА (ВИЗУАЛЬНАЯ) */
-        .ladder-floor {
-            background: #2f3136;
-            border-radius: 60px;
-            padding: 10px;
-            margin: 8px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .ladder-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin: 20px 0;
-        }
-        .ladder-btn {
-            background: #2c3e66;
-            border: none;
-            border-radius: 60px;
-            padding: 12px 18px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            cursor: pointer;
-            color: white;
-            min-width: 70px;
-        }
-        .ladder-status { text-align: center; margin: 15px 0; font-size: 1.2rem; }
-
         .crash-number {
             font-size: 3rem;
             font-weight: bold;
@@ -276,7 +246,6 @@
         <div class="game-buttons">
             <button class="game-choice-btn" data-game="mines">💣 МИНЫ</button>
             <button class="game-choice-btn" data-game="crash">📈 КРАШ</button>
-            <button class="game-choice-btn" data-game="ladder">🪜 ЛЕСТНИЦА</button>
             <button class="game-choice-btn" data-game="coin">🪙 МОНЕТКА</button>
         </div>
     </div>
@@ -306,16 +275,6 @@
 <div id="crashPage" class="game-page"><div class="game-header"><span class="game-title">📈 КРАШ</span><button class="exit-btn" data-exit="crash">✕ Выйти</button></div>
 <div class="card"><div class="bet-control"><span>Ставка:</span><input type="number" id="crashBet" class="bet-input" value="10" step="5"><button id="startCrashBtn" class="primary-btn crash-start-margin">📈 Запустить</button></div>
 <div class="crash-number" id="crashMultiplier">1.00x</div><button id="cashoutCrashBtn" style="display:none; width:100%;" class="primary-btn">✅ ЗАБРАТЬ</button><div id="crashStatus" class="win-text"></div></div></div>
-
-<!-- ЛЕСТНИЦА (ИСПРАВЛЕННАЯ) -->
-<div id="ladderPage" class="game-page"><div class="game-header"><span class="game-title">🪜 ЛЕСТНИЦА</span><button class="exit-btn" data-exit="ladder">✕ Выйти</button></div>
-<div class="card"><div class="difficulty-group"><button class="diff-btn" data-ladder-diff="easy">🟢 Лёгкая</button><button class="diff-btn" data-ladder-diff="medium">🟡 Средняя</button><button class="diff-btn" data-ladder-diff="hard">🔴 Сложная</button></div>
-<div class="bet-control"><span>Ставка:</span><input type="number" id="ladderBet" class="bet-input" value="10" step="5"><button id="startLadderBtn" class="primary-btn">🎲 Начать подъём</button></div>
-<div id="ladderDisplay"></div>
-<div id="ladderButtons" class="ladder-buttons"></div>
-<div class="win-text">💰 Текущий выигрыш: <strong id="ladderWin">0</strong></div>
-<button id="cashoutLadderBtn" style="display:none; width:100%; margin-top:12px;" class="primary-btn">✅ ЗАБРАТЬ ПРИЗ</button>
-<div id="ladderStatus" class="ladder-status"></div></div></div>
 
 <!-- МОНЕТКА -->
 <div id="coinPage" class="game-page"><div class="game-header"><span class="game-title">🪙 МОНЕТКА</span><button class="exit-btn" data-exit="coin">✕ Выйти</button></div>
@@ -483,89 +442,6 @@
     function cashoutCrash() { if (!crashInterval) return; clearInterval(crashInterval); crashInterval = null; let mult = parseFloat(document.getElementById('crashMultiplier').innerText); let bet = parseInt(document.getElementById('crashBet').value); let win = Math.floor(mult * bet); demoCoins += win; saveDemoCoins(); tg.showAlert(`🎉 Вы выиграли ${win} монет!`); document.getElementById('cashoutCrashBtn').style.display = 'none'; document.getElementById('crashStatus').innerHTML = `✅ Забрано ${mult.toFixed(2)}x → ${win} монет`; }
     document.getElementById('startCrashBtn').onclick = startCrash;
     document.getElementById('cashoutCrashBtn').onclick = cashoutCrash;
-
-    // ========== ЛЕСТНИЦА (ВИЗУАЛЬНАЯ, ПОЧИНЕННАЯ) ==========
-    let ladderState = { active: false, difficulty: 'easy', bet: 0, step: 0, currentWin: 0, maxSteps: 5, gameOver: false, lastChoice: null, wasWin: false };
-    function getLadderOptions() { let min = 2; let max = { easy: 4, medium: 6, hard: 8 }[ladderState.difficulty]; return Math.min(min + ladderState.step, max); }
-    function renderLadderDisplay() {
-        const container = document.getElementById('ladderDisplay'); container.innerHTML = '';
-        let totalSteps = { easy: 8, medium: 10, hard: 10 }[ladderState.difficulty];
-        let options = getLadderOptions();
-        for (let i = 1; i <= totalSteps; i++) {
-            let floor = document.createElement('div'); floor.className = 'ladder-floor';
-            let left = document.createElement('div'); left.style.display = 'flex'; left.style.gap = '10px';
-            for (let j = 1; j <= options; j++) {
-                let stair = document.createElement('span');
-                stair.style.fontSize = '1.6rem';
-                stair.style.width = '40px'; stair.style.textAlign = 'center';
-                if (i < ladderState.step) { stair.innerText = (ladderState.lastChoice === j && ladderState.wasWin) ? '🧍‍♂️' : '🪜'; }
-                else if (i === ladderState.step && !ladderState.gameOver && ladderState.active) {
-                    if (ladderState.lastChoice === j && ladderState.wasWin) stair.innerText = '🧍‍♂️';
-                    else stair.innerText = '🪜';
-                }
-                else if (i === ladderState.step && ladderState.gameOver && !ladderState.active) { stair.innerText = (j === ladderState.lastChoice ? '👻' : '🪜'); }
-                else { stair.innerText = '🪜'; }
-                left.appendChild(stair);
-            }
-            let right = document.createElement('div');
-            right.style.fontSize = '1.2rem';
-            right.innerText = (i === ladderState.step && !ladderState.gameOver && ladderState.active) ? '🧍‍♂️' : (i === ladderState.step && ladderState.gameOver ? '💀' : '');
-            floor.appendChild(left); floor.appendChild(right);
-            container.appendChild(floor);
-        }
-    }
-    function renderLadder() {
-        let container = document.getElementById('ladderButtons'); container.innerHTML = '';
-        if (ladderState.active && !ladderState.gameOver) {
-            let optionsCount = getLadderOptions();
-            for (let i = 1; i <= optionsCount; i++) { let btn = document.createElement('button'); btn.className = 'ladder-btn'; btn.innerText = `🪜 ${i}`; btn.onclick = () => ladderChoose(i); container.appendChild(btn); }
-        } else { let btn = document.createElement('button'); btn.className = 'ladder-btn'; btn.innerText = '❌ ИГРА ОКОНЧЕНА'; container.appendChild(btn); }
-        renderLadderDisplay();
-    }
-    function ladderChoose(selected) {
-        if (!ladderState.active || ladderState.gameOver) return;
-        let optionsCount = getLadderOptions();
-        let safe = Math.floor(Math.random() * optionsCount) + 1;
-        let win = (selected === safe);
-        ladderState.lastChoice = selected;
-        ladderState.wasWin = win;
-        if (win) {
-            ladderState.step++;
-            let multiplier = (ladderState.multipliers[ladderState.difficulty][ladderState.step] || ladderState.multipliers[ladderState.difficulty].slice(-1)[0]);
-            ladderState.currentWin = Math.floor(ladderState.bet * multiplier);
-            document.getElementById('ladderWin').innerText = ladderState.currentWin;
-            document.getElementById('cashoutLadderBtn').style.display = 'block';
-            let totalSteps = { easy: 8, medium: 10, hard: 10 }[ladderState.difficulty];
-            if (ladderState.step >= totalSteps) { demoCoins += ladderState.currentWin; saveDemoCoins(); ladderState.active = false; ladderState.gameOver = false; document.getElementById('ladderStatus').innerHTML = '🏆 ПОБЕДА! Вы достигли вершины!'; document.getElementById('cashoutLadderBtn').style.display = 'none'; }
-            else { document.getElementById('ladderStatus').innerHTML = '✅ Поднялся! Выбери следующую лестницу.'; vibrate(); }
-        } else {
-            ladderState.active = false; ladderState.gameOver = true;
-            document.getElementById('ladderStatus').innerHTML = '👻 Призрак съел пикмена! Вы проиграли.'; document.getElementById('cashoutLadderBtn').style.display = 'none'; vibrate();
-        }
-        renderLadder();
-    }
-    function startLadder() {
-        if (ladderState.active) return;
-        let bet = parseInt(document.getElementById('ladderBet').value);
-        if (isNaN(bet) || bet <= 0) bet = 10;
-        if (bet > demoCoins) { tg.showAlert('❌ Не хватает монет'); return; }
-        demoCoins -= bet; saveDemoCoins();
-        let diff = document.querySelector('#ladderPage .diff-btn.active')?.dataset.ladderDiff || 'easy';
-        ladderState = {
-            active: true, difficulty: diff, bet: bet, step: 0, currentWin: 0, gameOver: false, lastChoice: null, wasWin: false,
-            maxSteps: { easy: 8, medium: 10, hard: 10 }[diff],
-            multipliers: { easy: [1, 1.3, 1.7, 2.2, 3, 4, 5.5, 7.5, 10, 14, 18], medium: [1, 1.4, 1.9, 2.5, 3.5, 5, 7, 10, 14, 19, 25], hard: [1, 1.6, 2.2, 3, 4.5, 6.5, 9, 13, 18, 25, 35] }[diff]
-        };
-        document.getElementById('ladderWin').innerText = '0'; document.getElementById('ladderStatus').innerHTML = '⬆️ Выбери лестницу!'; document.getElementById('cashoutLadderBtn').style.display = 'none'; renderLadder();
-    }
-    function cashoutLadder() { if (!ladderState.active) return; demoCoins += ladderState.currentWin; saveDemoCoins(); tg.showAlert(`✅ Вы забрали ${ladderState.currentWin} монет!`); ladderState.active = false; ladderState.gameOver = false; document.getElementById('cashoutLadderBtn').style.display = 'none'; renderLadder(); }
-    document.getElementById('startLadderBtn').onclick = startLadder;
-    document.getElementById('cashoutLadderBtn').onclick = cashoutLadder;
-    document.querySelectorAll('#ladderPage .diff-btn').forEach(btn => {
-        btn.onclick = () => { document.querySelectorAll('#ladderPage .diff-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); if (!ladderState.active) { ladderState.difficulty = btn.dataset.ladderDiff; } };
-    });
-    document.querySelector('#ladderPage .diff-btn[data-ladder-diff="easy"]').classList.add('active');
-    renderLadder();
 
     // ========== МОНЕТКА ==========
     function coinPlay(choice) {
