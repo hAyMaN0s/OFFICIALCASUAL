@@ -200,14 +200,6 @@
             color: white;
             min-width: 70px;
         }
-        .ladder-visual {
-            font-size: 1rem;
-            margin: 8px 0;
-            padding: 8px;
-            background: #1e1f23;
-            border-radius: 40px;
-            text-align: center;
-        }
         .ladder-status { text-align: center; margin: 15px 0; font-size: 1.2rem; }
 
         .crash-number {
@@ -274,7 +266,7 @@
                 <button class="currency-btn" data-cur="EUR">EUR</button>
             </div>
         </div>
-        <div style="margin: 12px 0;">💳 Реальный счет: <strong id="realBalance">0.00</strong> <span id="realCurr">RUB</span></div>
+        <div style="margin: 12px 0;">💳 Реальный счёт: <strong id="realBalance">0.00</strong> <span id="realCurr">RUB</span></div>
         <div class="action-buttons">
             <button id="depositBtn" class="action-btn">💸 Пополнить</button>
             <button id="withdrawBtn" class="action-btn">🏧 Вывести</button>
@@ -315,7 +307,7 @@
 <div class="card"><div class="bet-control"><span>Ставка:</span><input type="number" id="crashBet" class="bet-input" value="10" step="5"><button id="startCrashBtn" class="primary-btn crash-start-margin">📈 Запустить</button></div>
 <div class="crash-number" id="crashMultiplier">1.00x</div><button id="cashoutCrashBtn" style="display:none; width:100%;" class="primary-btn">✅ ЗАБРАТЬ</button><div id="crashStatus" class="win-text"></div></div></div>
 
-<!-- ЛЕСТНИЦА (ВИЗУАЛЬНАЯ) -->
+<!-- ЛЕСТНИЦА (ИСПРАВЛЕННАЯ) -->
 <div id="ladderPage" class="game-page"><div class="game-header"><span class="game-title">🪜 ЛЕСТНИЦА</span><button class="exit-btn" data-exit="ladder">✕ Выйти</button></div>
 <div class="card"><div class="difficulty-group"><button class="diff-btn" data-ladder-diff="easy">🟢 Лёгкая</button><button class="diff-btn" data-ladder-diff="medium">🟡 Средняя</button><button class="diff-btn" data-ladder-diff="hard">🔴 Сложная</button></div>
 <div class="bet-control"><span>Ставка:</span><input type="number" id="ladderBet" class="bet-input" value="10" step="5"><button id="startLadderBtn" class="primary-btn">🎲 Начать подъём</button></div>
@@ -492,12 +484,11 @@
     document.getElementById('startCrashBtn').onclick = startCrash;
     document.getElementById('cashoutCrashBtn').onclick = cashoutCrash;
 
-    // ========== ЛЕСТНИЦА (ВИЗУАЛЬНАЯ) ==========
+    // ========== ЛЕСТНИЦА (ВИЗУАЛЬНАЯ, ПОЧИНЕННАЯ) ==========
     let ladderState = { active: false, difficulty: 'easy', bet: 0, step: 0, currentWin: 0, maxSteps: 5, gameOver: false, lastChoice: null, wasWin: false };
     function getLadderOptions() { let min = 2; let max = { easy: 4, medium: 6, hard: 8 }[ladderState.difficulty]; return Math.min(min + ladderState.step, max); }
     function renderLadderDisplay() {
-        const container = document.getElementById('ladderDisplay');
-        container.innerHTML = '';
+        const container = document.getElementById('ladderDisplay'); container.innerHTML = '';
         let totalSteps = { easy: 8, medium: 10, hard: 10 }[ladderState.difficulty];
         let options = getLadderOptions();
         for (let i = 1; i <= totalSteps; i++) {
@@ -507,14 +498,18 @@
                 let stair = document.createElement('span');
                 stair.style.fontSize = '1.6rem';
                 stair.style.width = '40px'; stair.style.textAlign = 'center';
-                if (i < ladderState.step + 1) { stair.innerText = (ladderState.lastChoice === j && ladderState.wasWin && ladderState.step === i) ? '🧍‍♂️' : '🪜'; }
-                else if (i === ladderState.step + 1 && ladderState.active && !ladderState.gameOver) { stair.innerText = (j === ladderState.lastChoice && ladderState.wasWin) ? '🧍‍♂️' : (j === ladderState.lastChoice && !ladderState.wasWin ? '👻' : '🪜'); }
-                else if (i === ladderState.step + 1 && !ladderState.active && ladderState.gameOver) { stair.innerText = (j === ladderState.lastChoice ? '👻' : '🪜'); }
+                if (i < ladderState.step) { stair.innerText = (ladderState.lastChoice === j && ladderState.wasWin) ? '🧍‍♂️' : '🪜'; }
+                else if (i === ladderState.step && !ladderState.gameOver && ladderState.active) {
+                    if (ladderState.lastChoice === j && ladderState.wasWin) stair.innerText = '🧍‍♂️';
+                    else stair.innerText = '🪜';
+                }
+                else if (i === ladderState.step && ladderState.gameOver && !ladderState.active) { stair.innerText = (j === ladderState.lastChoice ? '👻' : '🪜'); }
                 else { stair.innerText = '🪜'; }
                 left.appendChild(stair);
             }
             let right = document.createElement('div');
-            right.style.fontSize = '1.2rem'; right.innerText = i === ladderState.step && !ladderState.gameOver ? '🧍‍♂️' : (i === ladderState.step && ladderState.gameOver ? '💀' : '');
+            right.style.fontSize = '1.2rem';
+            right.innerText = (i === ladderState.step && !ladderState.gameOver && ladderState.active) ? '🧍‍♂️' : (i === ladderState.step && ladderState.gameOver ? '💀' : '');
             floor.appendChild(left); floor.appendChild(right);
             container.appendChild(floor);
         }
