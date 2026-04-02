@@ -21,7 +21,10 @@
         body.light { background: #f5f7fa; color: #1e293b; }
         body.gray  { background: #2d2f36; color: #e2e8f0; }
 
-        .container { max-width: 550px; margin: 0 auto; }
+        .container {
+            max-width: 550px;
+            margin: 0 auto;
+        }
         .card {
             background: #1e1f23;
             border-radius: 32px;
@@ -48,7 +51,10 @@
             font-weight: bold;
             font-size: 1.3rem;
         }
-        .currency-switch { display: flex; gap: 10px; }
+        .currency-switch {
+            display: flex;
+            gap: 10px;
+        }
         .currency-btn {
             background: none;
             border: 1px solid currentColor;
@@ -132,7 +138,10 @@
             cursor: pointer;
             color: white;
         }
-        .game-title { font-size: 1.8rem; font-weight: bold; }
+        .game-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
 
         /* ОБЩИЕ ЭЛЕМЕНТЫ */
         .difficulty-group {
@@ -150,7 +159,10 @@
             cursor: pointer;
             color: white;
         }
-        .diff-btn.active { background: gold; color: black; }
+        .diff-btn.active {
+            background: gold;
+            color: black;
+        }
         .bet-control {
             display: flex;
             gap: 12px;
@@ -174,6 +186,9 @@
             cursor: pointer;
             color: white;
         }
+        .crash-start-margin {
+            margin-top: 16px;
+        }
         .ladder-buttons {
             display: flex;
             gap: 15px;
@@ -196,6 +211,9 @@
             text-align: center;
             font-size: 2rem;
             margin: 15px 0;
+            background: #2f3136;
+            padding: 12px;
+            border-radius: 60px;
         }
         .crash-number {
             font-size: 3rem;
@@ -203,7 +221,11 @@
             text-align: center;
             margin: 30px 0;
         }
-        .win-text { text-align: center; margin: 15px 0; font-size: 1.2rem; }
+        .win-text {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 1.2rem;
+        }
         .grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -224,6 +246,17 @@
         body.light .cell { background: #cbd5e1; }
         .cell.revealed-star { background: #1f4d2e; cursor: default; }
         .cell.mine { background: #9b2c2c; }
+        .ladder-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            font-size: 2rem;
+            background: #2f3136;
+            border-radius: 60px;
+            padding: 8px 20px;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -261,16 +294,16 @@
 <div id="minesGrid" class="grid"></div><div class="win-text">💰 Выигрыш: <strong id="minesWin">0</strong></div>
 <button id="cashoutMinesBtn" style="display:none; width:100%;" class="primary-btn">✅ ЗАБРАТЬ</button><div id="minesStatus" class="win-text"></div></div></div>
 
-<!-- КРАШ -->
+<!-- КРАШ (увеличен отступ кнопки) -->
 <div id="crashPage" class="game-page"><div class="game-header"><span class="game-title">📈 КРАШ</span><button class="exit-btn" data-exit="crash">✕ Выйти</button></div>
-<div class="card"><div class="bet-control"><span>Ставка:</span><input type="number" id="crashBet" class="bet-input" value="10" step="5"><button id="startCrashBtn" class="primary-btn" style="margin-top:8px;">📈 Запустить</button></div>
+<div class="card"><div class="bet-control"><span>Ставка:</span><input type="number" id="crashBet" class="bet-input" value="10" step="5"><button id="startCrashBtn" class="primary-btn crash-start-margin">📈 Запустить</button></div>
 <div class="crash-number" id="crashMultiplier">1.00x</div><button id="cashoutCrashBtn" style="display:none; width:100%;" class="primary-btn">✅ ЗАБРАТЬ</button><div id="crashStatus" class="win-text"></div></div></div>
 
-<!-- ЛЕСТНИЦА (НОВАЯ) -->
+<!-- ЛЕСТНИЦА (пикмен виден, не сбрасывается) -->
 <div id="ladderPage" class="game-page"><div class="game-header"><span class="game-title">🪜 ЛЕСТНИЦА</span><button class="exit-btn" data-exit="ladder">✕ Выйти</button></div>
 <div class="card"><div class="difficulty-group"><button class="diff-btn" data-ladder-diff="easy">🟢 Лёгкая</button><button class="diff-btn" data-ladder-diff="medium">🟡 Средняя</button><button class="diff-btn" data-ladder-diff="hard">🔴 Сложная</button></div>
 <div class="bet-control"><span>Ставка:</span><input type="number" id="ladderBet" class="bet-input" value="10" step="5"><button id="startLadderBtn" class="primary-btn">🎲 Начать подъём</button></div>
-<div id="ladderVisual" class="ladder-step">🏔️ Нажми "Начать"</div>
+<div id="ladderVisual" class="ladder-step"></div>
 <div id="ladderButtons" class="ladder-buttons"></div><div class="win-text">💰 Текущий выигрыш: <strong id="ladderWin">0</strong></div>
 <button id="cashoutLadderBtn" style="display:none; width:100%; margin-top:12px;" class="primary-btn">✅ ЗАБРАТЬ ПРИЗ</button>
 <div id="ladderStatus" class="win-text"></div></div></div>
@@ -331,7 +364,7 @@
         btn.onclick = () => showMain();
     });
 
-    // ========== МИНЫ ==========
+    // ========== МИНЫ (НЕ СБРАСЫВАЕТСЯ ДО НОВОЙ ИГРЫ) ==========
     let minesState = { active: false, difficulty: 'medium', board: [], revealed: [], bet: 0, currentWin: 0, gameOver: false, totalMines: 5 };
     const minesCount = { easy: 3, medium: 5, hard: 8 };
     const minesMultipliers = {
@@ -348,11 +381,15 @@
     }
     function renderMinesGrid() {
         const grid = document.getElementById('minesGrid'); grid.innerHTML = '';
-        if (!minesState.active && !minesState.gameOver) { for (let i = 0; i < 25; i++) { let cell = document.createElement('div'); cell.className = 'cell'; cell.innerText = '❓'; grid.appendChild(cell); } return; }
         for (let i = 0; i < 25; i++) {
             let cell = document.createElement('div'); cell.className = 'cell';
-            if (minesState.revealed[i]) { cell.classList.add('revealed-star'); cell.innerText = '⭐'; if (minesState.gameOver && minesState.board[i]) { cell.innerText = '💣'; cell.classList.add('mine'); } }
-            else { cell.innerText = '❓'; if (!minesState.active && minesState.gameOver && minesState.board[i]) { cell.innerText = '💣'; cell.classList.add('mine'); } }
+            if (minesState.revealed[i]) {
+                cell.classList.add('revealed-star'); cell.innerText = '⭐';
+                if (minesState.gameOver && minesState.board[i]) { cell.innerText = '💣'; cell.classList.add('mine'); }
+            } else {
+                cell.innerText = '❓';
+                if (minesState.gameOver && minesState.board[i]) { cell.innerText = '💣'; cell.classList.add('mine'); }
+            }
             if (!minesState.gameOver && minesState.active && !minesState.revealed[i]) cell.addEventListener('click', (idx => () => minesMove(idx))(i));
             grid.appendChild(cell);
         }
@@ -410,28 +447,43 @@
     document.getElementById('startCrashBtn').onclick = startCrash;
     document.getElementById('cashoutCrashBtn').onclick = cashoutCrash;
 
-    // ========== ЛЕСТНИЦА (ПРОГРЕССИЯ) ==========
-    let ladderState = { active: false, difficulty: 'easy', bet: 0, step: 0, currentWin: 0, maxSteps: 5, multipliers: { easy: [1, 1.3, 1.7, 2.2, 3, 4, 5.5, 7.5, 10, 14, 18], medium: [1, 1.4, 1.9, 2.5, 3.5, 5, 7, 10, 14, 19, 25], hard: [1, 1.6, 2.2, 3, 4.5, 6.5, 9, 13, 18, 25, 35] } };
+    // ========== ЛЕСТНИЦА (ВИЗУАЛЬНЫЙ ПИКМЕН, НЕ СБРАСЫВАЕТСЯ) ==========
+    let ladderState = { active: false, difficulty: 'easy', bet: 0, step: 0, currentWin: 0, maxSteps: 5, gameOver: false, multipliers: { easy: [1, 1.3, 1.7, 2.2, 3, 4, 5.5, 7.5, 10, 14, 18], medium: [1, 1.4, 1.9, 2.5, 3.5, 5, 7, 10, 14, 19, 25], hard: [1, 1.6, 2.2, 3, 4.5, 6.5, 9, 13, 18, 25, 35] } };
     function getLadderOptions() { let min = 2; let max = { easy: 4, medium: 6, hard: 8 }[ladderState.difficulty]; let options = Math.min(min + ladderState.step, max); return options; }
+    function renderLadderVisual() {
+        let totalSteps = { easy: 8, medium: 10, hard: 10 }[ladderState.difficulty];
+        let currentStep = ladderState.step;
+        let dead = ladderState.gameOver && !ladderState.active;
+        let won = (!ladderState.active && !ladderState.gameOver && ladderState.step > 0);
+        let message = '';
+        if (dead) message = '💀 ПИКМЕН ПОГИБ 💀';
+        else if (won) message = '🏆 ПИКМЕН ДОСТИГ ВЕРШИНЫ 🏆';
+        else message = '🧍‍♂️ ПИКМЕН ПОДНИМАЕТСЯ 🧍‍♂️';
+        let visual = `${message} | Ступень ${currentStep} / ${totalSteps} (Лестниц: ${getLadderOptions()})`;
+        document.getElementById('ladderVisual').innerHTML = visual;
+    }
     function renderLadder() {
         let container = document.getElementById('ladderButtons'); container.innerHTML = '';
-        let optionsCount = getLadderOptions();
-        for (let i = 1; i <= optionsCount; i++) { let btn = document.createElement('button'); btn.className = 'ladder-btn'; btn.innerText = `🪜 ${i}`; btn.onclick = () => ladderChoose(i); container.appendChild(btn); }
-        let totalSteps = { easy: 8, medium: 10, hard: 10 }[ladderState.difficulty];
-        document.getElementById('ladderVisual').innerHTML = `🏔️ Ступень ${ladderState.step + 1} / ${totalSteps} (Лестниц: ${optionsCount})`;
+        if (ladderState.active) {
+            let optionsCount = getLadderOptions();
+            for (let i = 1; i <= optionsCount; i++) { let btn = document.createElement('button'); btn.className = 'ladder-btn'; btn.innerText = `🪜 ${i}`; btn.onclick = () => ladderChoose(i); container.appendChild(btn); }
+        } else {
+            let btn = document.createElement('button'); btn.className = 'ladder-btn'; btn.innerText = '❌ ИГРА ОКОНЧЕНА'; container.appendChild(btn);
+        }
+        renderLadderVisual();
     }
     function ladderChoose(selected) {
         if (!ladderState.active) return;
         let optionsCount = getLadderOptions();
         let safe = Math.floor(Math.random() * optionsCount) + 1;
-        if (selected !== safe) { ladderState.active = false; document.getElementById('ladderStatus').innerHTML = '👻 Призрак съел пикмена! Вы проиграли.'; document.getElementById('cashoutLadderBtn').style.display = 'none'; renderLadder(); return; }
+        if (selected !== safe) { ladderState.active = false; ladderState.gameOver = true; document.getElementById('ladderStatus').innerHTML = '👻 Призрак съел пикмена! Вы проиграли.'; document.getElementById('cashoutLadderBtn').style.display = 'none'; renderLadder(); return; }
         ladderState.step++;
         let multiplier = ladderState.multipliers[ladderState.difficulty][ladderState.step] || ladderState.multipliers[ladderState.difficulty].slice(-1)[0];
         ladderState.currentWin = Math.floor(ladderState.bet * multiplier);
         document.getElementById('ladderWin').innerText = ladderState.currentWin;
         document.getElementById('cashoutLadderBtn').style.display = 'block';
         let totalSteps = { easy: 8, medium: 10, hard: 10 }[ladderState.difficulty];
-        if (ladderState.step >= totalSteps) { demoCoins += ladderState.currentWin; saveDemoCoins(); ladderState.active = false; document.getElementById('ladderStatus').innerHTML = '🏆 ПОБЕДА! Вы достигли вершины!'; document.getElementById('cashoutLadderBtn').style.display = 'none'; }
+        if (ladderState.step >= totalSteps) { demoCoins += ladderState.currentWin; saveDemoCoins(); ladderState.active = false; ladderState.gameOver = false; document.getElementById('ladderStatus').innerHTML = '🏆 ПОБЕДА! Вы достигли вершины!'; document.getElementById('cashoutLadderBtn').style.display = 'none'; }
         renderLadder();
     }
     function startLadder() {
@@ -441,10 +493,10 @@
         if (bet > demoCoins) { tg.showAlert('❌ Не хватает монет'); return; }
         demoCoins -= bet; saveDemoCoins();
         let diff = document.querySelector('#ladderPage .diff-btn.active')?.dataset.ladderDiff || 'easy';
-        ladderState = { active: true, difficulty: diff, bet: bet, step: 0, currentWin: 0, maxSteps: { easy: 8, medium: 10, hard: 10 }[diff], multipliers: { easy: [1, 1.3, 1.7, 2.2, 3, 4, 5.5, 7.5, 10, 14, 18], medium: [1, 1.4, 1.9, 2.5, 3.5, 5, 7, 10, 14, 19, 25], hard: [1, 1.6, 2.2, 3, 4.5, 6.5, 9, 13, 18, 25, 35] }[diff] };
+        ladderState = { active: true, difficulty: diff, bet: bet, step: 0, currentWin: 0, gameOver: false, maxSteps: { easy: 8, medium: 10, hard: 10 }[diff], multipliers: { easy: [1, 1.3, 1.7, 2.2, 3, 4, 5.5, 7.5, 10, 14, 18], medium: [1, 1.4, 1.9, 2.5, 3.5, 5, 7, 10, 14, 19, 25], hard: [1, 1.6, 2.2, 3, 4.5, 6.5, 9, 13, 18, 25, 35] }[diff] };
         document.getElementById('ladderWin').innerText = '0'; document.getElementById('ladderStatus').innerHTML = '⬆️ Выбери лестницу!'; document.getElementById('cashoutLadderBtn').style.display = 'none'; renderLadder();
     }
-    function cashoutLadder() { if (!ladderState.active) return; demoCoins += ladderState.currentWin; saveDemoCoins(); tg.showAlert(`✅ Вы забрали ${ladderState.currentWin} монет!`); ladderState.active = false; document.getElementById('cashoutLadderBtn').style.display = 'none'; renderLadder(); }
+    function cashoutLadder() { if (!ladderState.active) return; demoCoins += ladderState.currentWin; saveDemoCoins(); tg.showAlert(`✅ Вы забрали ${ladderState.currentWin} монет!`); ladderState.active = false; ladderState.gameOver = false; document.getElementById('cashoutLadderBtn').style.display = 'none'; renderLadder(); }
     document.getElementById('startLadderBtn').onclick = startLadder;
     document.getElementById('cashoutLadderBtn').onclick = cashoutLadder;
     document.querySelectorAll('#ladderPage .diff-btn').forEach(btn => {
