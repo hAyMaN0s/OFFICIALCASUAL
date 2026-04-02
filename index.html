@@ -3,88 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>OFFICIALCASUAL · Демо-казино</title>
+    <title>OFFICIALCASUAL · Главная</title>
     <style>
         * {
             box-sizing: border-box;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
-
         body {
             margin: 0;
-            padding: 16px;
+            padding: 20px;
             font-family: system-ui, 'Segoe UI', 'Roboto', sans-serif;
             transition: background 0.2s, color 0.2s;
+            background: #0a0c0e;
+            color: #e4e6eb;
         }
-
-        /* ТЕМЫ */
         body.light { background: #f5f7fa; color: #1e293b; }
         body.gray  { background: #2d2f36; color: #e2e8f0; }
-        body.dark  { background: #0a0c0e; color: #e4e6eb; }
 
         .container {
-            max-width: 600px;
+            max-width: 550px;
             margin: 0 auto;
         }
-
-        /* ОБЩИЕ КАРТОЧКИ */
         .card {
-            background: rgba(255,255,255,0.05);
-            border-radius: 28px;
-            padding: 20px;
-            margin-bottom: 20px;
-            backdrop-filter: blur(4px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            background: #1e1f23;
+            border-radius: 32px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
-        body.light .card { background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        body.light .card { background: white; }
         body.gray .card  { background: #3a3c44; }
-        body.dark .card  { background: #1e1f23; }
 
-        /* ПРОФИЛЬ (отдельная карточка) */
-        .profile-row {
+        /* ПРОФИЛЬ */
+        .balance-row {
             display: flex;
             justify-content: space-between;
             align-items: baseline;
             flex-wrap: wrap;
             gap: 12px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         .balance-box {
             background: #00000033;
-            padding: 8px 16px;
+            padding: 8px 20px;
             border-radius: 60px;
             font-weight: bold;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
-        .action-buttons {
-            display: flex;
-            gap: 12px;
-            margin-top: 12px;
-        }
-        .action-btn {
-            flex: 1;
-            background: #2c3e66;
-            border: none;
-            border-radius: 60px;
-            padding: 14px 20px;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            color: white;
-            text-align: center;
-        }
-        .action-btn:active { transform: scale(0.97); }
-
-        /* ВЫБОР ВАЛЮТЫ */
         .currency-switch {
             display: flex;
-            gap: 12px;
+            gap: 10px;
         }
         .currency-btn {
             background: none;
             border: 1px solid currentColor;
-            border-radius: 30px;
+            border-radius: 40px;
             padding: 6px 16px;
             font-weight: bold;
             cursor: pointer;
@@ -94,51 +68,112 @@
             color: black;
             border-color: gold;
         }
-
-        /* ВЫБОР ИГРЫ */
-        .game-selector {
+        .action-buttons {
             display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
+            gap: 15px;
+            margin-top: 15px;
         }
-        .game-btn {
+        .action-btn {
             flex: 1;
             background: #2c3e66;
             border: none;
             border-radius: 60px;
-            padding: 14px 8px;
+            padding: 14px;
             font-weight: bold;
             font-size: 1rem;
             cursor: pointer;
             color: white;
             text-align: center;
         }
-        .game-btn.active {
+        .action-btn:active { transform: scale(0.97); }
+
+        /* ВЫБОР ИГРЫ (БОЛЬШИЕ КНОПКИ) */
+        .game-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .game-choice-btn {
+            background: #2c3e66;
+            border: none;
+            border-radius: 60px;
+            padding: 28px 20px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            text-align: center;
+            transition: 0.1s;
+        }
+        .game-choice-btn:active { transform: scale(0.98); }
+
+        /* СТРАНИЦА ИГРЫ (полный экран, без лишнего) */
+        .game-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0c0e;
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+            display: none;
+            flex-direction: column;
+        }
+        body.light .game-page { background: #f5f7fa; }
+        body.gray .game-page  { background: #2d2f36; }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .exit-btn {
+            background: #9b2c2c;
+            border: none;
+            border-radius: 60px;
+            padding: 10px 24px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+        }
+        .game-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        /* ИГРОВЫЕ ЭЛЕМЕНТЫ */
+        .difficulty-group {
+            display: flex;
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .diff-btn {
+            flex: 1;
+            background: #2c3e66;
+            border: none;
+            border-radius: 60px;
+            padding: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+        }
+        .diff-btn.active {
             background: gold;
             color: black;
         }
-
-        /* КАЖДАЯ ИГРА — ОТДЕЛЬНАЯ КАРТОЧКА (скрывается/показывается) */
-        .game-panel {
-            display: none;
-        }
-        .game-panel.active {
-            display: block;
-        }
-
-        /* ОБЩИЕ СТИЛИ ДЛЯ ИГР */
-        .game-controls {
+        .bet-control {
             display: flex;
-            flex-wrap: wrap;
             gap: 12px;
             align-items: center;
-            margin: 15px 0;
+            margin: 20px 0;
         }
         .bet-input {
-            width: 100px;
-            padding: 10px;
-            border-radius: 40px;
+            width: 120px;
+            padding: 12px;
+            border-radius: 60px;
             border: none;
             text-align: center;
             font-size: 1rem;
@@ -152,9 +187,6 @@
             cursor: pointer;
             color: white;
         }
-        .danger-btn {
-            background: #9b2c2c;
-        }
         .grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -163,7 +195,7 @@
         }
         .cell {
             aspect-ratio: 1 / 1;
-            background: #2d3748;
+            background: #2f3136;
             border-radius: 16px;
             display: flex;
             align-items: center;
@@ -173,9 +205,6 @@
             cursor: pointer;
         }
         body.light .cell { background: #cbd5e1; }
-        body.gray .cell  { background: #4a4d59; }
-        body.dark .cell  { background: #2f3136; }
-
         .cell.revealed-star {
             background: #1f4d2e;
             cursor: default;
@@ -183,33 +212,16 @@
         .cell.mine {
             background: #9b2c2c;
         }
-
         .crash-number {
             font-size: 3rem;
             font-weight: bold;
             text-align: center;
-            margin: 20px 0;
+            margin: 30px 0;
         }
-
-        .settings-panel {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-        .theme-btns { display: flex; gap: 8px; }
-        .theme-btn {
-            background: #444;
-            border: none;
-            border-radius: 40px;
-            padding: 8px 16px;
-            cursor: pointer;
-            color: white;
-        }
-        .theme-btn.active {
-            background: gold;
-            color: black;
+        .win-text {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 1.2rem;
         }
         footer {
             text-align: center;
@@ -219,11 +231,11 @@
         }
     </style>
 </head>
-<body class="dark">
-<div class="container">
-    <!-- ========== ПРОФИЛЬ (отдельная карточка) ========== -->
+<body>
+<div class="container" id="mainPage">
+    <!-- ПРОФИЛЬ -->
     <div class="card">
-        <div class="profile-row">
+        <div class="balance-row">
             <span class="balance-box">🎰 Демо: <strong id="demoBalance">1000</strong></span>
             <div class="currency-switch">
                 <button class="currency-btn" data-cur="RUB">RUB</button>
@@ -231,109 +243,103 @@
                 <button class="currency-btn" data-cur="EUR">EUR</button>
             </div>
         </div>
-        <div style="margin: 12px 0;">
-            💳 Реальный счёт: <strong id="realBalance">0.00</strong> <span id="realCurr">RUB</span>
-        </div>
+        <div style="margin: 12px 0;">💳 Реальный счёт: <strong id="realBalance">0.00</strong> <span id="realCurr">RUB</span></div>
         <div class="action-buttons">
             <button id="depositBtn" class="action-btn">💸 Пополнить</button>
             <button id="withdrawBtn" class="action-btn">🏧 Вывести</button>
         </div>
     </div>
 
-    <!-- ========== ВЫБОР ИГРЫ ========== -->
+    <!-- ВЫБОР ИГРЫ (БОЛЬШИЕ КНОПКИ) -->
     <div class="card">
-        <div class="game-selector">
-            <button class="game-btn active" data-game="mines">💣 МИНЫ</button>
-            <button class="game-btn" data-game="crash">📈 КРАШ</button>
-            <button class="game-btn" data-game="ladder">🪜 ЛЕСТНИЦА</button>
-            <button class="game-btn" data-game="coin">🪙 МОНЕТКА</button>
+        <div class="game-buttons">
+            <button class="game-choice-btn" data-game="mines">💣 МИНЫ</button>
+            <button class="game-choice-btn" data-game="crash">📈 КРАШ</button>
+            <button class="game-choice-btn" data-game="ladder">🪜 ЛЕСТНИЦА</button>
+            <button class="game-choice-btn" data-game="coin">🪙 МОНЕТКА</button>
         </div>
     </div>
+    <footer>⚡ OFFICIALCASUAL · Демо-режим</footer>
+</div>
 
-    <!-- ========== ИГРОВЫЕ ПАНЕЛИ (каждая — отдельная карточка) ========== -->
-    <!-- МИНЫ -->
-    <div id="minesPanel" class="game-panel active">
-        <div class="card">
-            <h3>💣 МИНЫ</h3>
-            <div class="difficulty-buttons" style="display:flex;gap:8px;margin-bottom:12px;">
-                <button class="difficulty-btn" data-diff="easy">🟢 Лёгкая</button>
-                <button class="difficulty-btn" data-diff="medium">🟡 Средняя</button>
-                <button class="difficulty-btn" data-diff="hard">🔴 Сложная</button>
-            </div>
-            <div class="game-controls">
-                <span>Ставка:</span>
-                <input type="number" id="minesBet" class="bet-input" value="10" step="5">
-                <button id="startMinesBtn" class="primary-btn">🎲 Начать</button>
-            </div>
-            <div id="minesGrid" class="grid"></div>
-            <div style="text-align:center;margin-top:8px;">💰 Выигрыш: <strong id="minesWin">0</strong></div>
-            <button id="cashoutMinesBtn" style="display:none; width:100%; margin-top:12px;" class="primary-btn">✅ ЗАБРАТЬ</button>
-            <div id="minesStatus" style="margin-top:12px;text-align:center;"></div>
-        </div>
+<!-- СТРАНИЦА МИНЫ -->
+<div id="minesPage" class="game-page">
+    <div class="game-header">
+        <span class="game-title">💣 МИНЫ</span>
+        <button class="exit-btn" data-exit="mines">✕ Выйти</button>
     </div>
+    <div class="card" style="margin:0; padding:20px;">
+        <div class="difficulty-group">
+            <button class="diff-btn" data-diff="easy">🟢 Лёгкая</button>
+            <button class="diff-btn" data-diff="medium">🟡 Средняя</button>
+            <button class="diff-btn" data-diff="hard">🔴 Сложная</button>
+        </div>
+        <div class="bet-control">
+            <span>Ставка:</span>
+            <input type="number" id="minesBet" class="bet-input" value="10" step="5">
+            <button id="startMinesBtn" class="primary-btn">🎲 Новая игра</button>
+        </div>
+        <div id="minesGrid" class="grid"></div>
+        <div class="win-text">💰 Выигрыш: <strong id="minesWin">0</strong></div>
+        <button id="cashoutMinesBtn" style="display:none; width:100%;" class="primary-btn">✅ ЗАБРАТЬ</button>
+        <div id="minesStatus" class="win-text"></div>
+    </div>
+</div>
 
-    <!-- КРАШ -->
-    <div id="crashPanel" class="game-panel">
-        <div class="card">
-            <h3>📈 КРАШ</h3>
-            <div class="game-controls">
-                <span>Ставка:</span>
-                <input type="number" id="crashBet" class="bet-input" value="10" step="5">
-                <button id="startCrashBtn" class="primary-btn">📈 Запустить</button>
-            </div>
-            <div class="crash-number" id="crashMultiplier">1.00x</div>
-            <button id="cashoutCrashBtn" style="display:none; width:100%;" class="primary-btn">✅ ЗАБРАТЬ x??</button>
-            <div id="crashStatus" style="margin-top:12px;text-align:center;"></div>
-        </div>
+<!-- СТРАНИЦА КРАШ -->
+<div id="crashPage" class="game-page">
+    <div class="game-header">
+        <span class="game-title">📈 КРАШ</span>
+        <button class="exit-btn" data-exit="crash">✕ Выйти</button>
     </div>
+    <div class="card" style="margin:0; padding:20px;">
+        <div class="bet-control">
+            <span>Ставка:</span>
+            <input type="number" id="crashBet" class="bet-input" value="10" step="5">
+            <button id="startCrashBtn" class="primary-btn">📈 Запустить</button>
+        </div>
+        <div class="crash-number" id="crashMultiplier">1.00x</div>
+        <button id="cashoutCrashBtn" style="display:none; width:100%;" class="primary-btn">✅ ЗАБРАТЬ</button>
+        <div id="crashStatus" class="win-text"></div>
+    </div>
+</div>
 
-    <!-- ЛЕСТНИЦА -->
-    <div id="ladderPanel" class="game-panel">
-        <div class="card">
-            <h3>🪜 ЛЕСТНИЦА</h3>
-            <div class="game-controls">
-                <span>Ставка:</span>
-                <input type="number" id="ladderBet" class="bet-input" value="10" step="5">
-            </div>
-            <div style="display:flex;gap:12px;margin:12px 0;">
-                <button id="ladderUp" class="primary-btn" style="flex:1">⬆️ ВВЕРХ</button>
-                <button id="ladderDown" class="primary-btn" style="flex:1">⬇️ ВНИЗ</button>
-            </div>
-            <div id="ladderResult" style="text-align:center;"></div>
-        </div>
+<!-- СТРАНИЦА ЛЕСТНИЦА -->
+<div id="ladderPage" class="game-page">
+    <div class="game-header">
+        <span class="game-title">🪜 ЛЕСТНИЦА</span>
+        <button class="exit-btn" data-exit="ladder">✕ Выйти</button>
     </div>
+    <div class="card" style="margin:0; padding:20px;">
+        <div class="bet-control">
+            <span>Ставка:</span>
+            <input type="number" id="ladderBet" class="bet-input" value="10" step="5">
+        </div>
+        <div style="display:flex; gap:15px; margin:20px 0;">
+            <button id="ladderUp" class="primary-btn" style="flex:1">⬆️ ВВЕРХ</button>
+            <button id="ladderDown" class="primary-btn" style="flex:1">⬇️ ВНИЗ</button>
+        </div>
+        <div id="ladderResult" class="win-text"></div>
+    </div>
+</div>
 
-    <!-- МОНЕТКА -->
-    <div id="coinPanel" class="game-panel">
-        <div class="card">
-            <h3>🪙 МОНЕТКА</h3>
-            <div class="game-controls">
-                <span>Ставка:</span>
-                <input type="number" id="coinBet" class="bet-input" value="10" step="5">
-            </div>
-            <div style="display:flex;gap:12px;margin:12px 0;">
-                <button id="coinHeads" class="primary-btn" style="flex:1">🪙 Орёл</button>
-                <button id="coinTails" class="primary-btn" style="flex:1">🪙 Решка</button>
-            </div>
-            <div id="coinResult" style="text-align:center;"></div>
-        </div>
+<!-- СТРАНИЦА МОНЕТКА -->
+<div id="coinPage" class="game-page">
+    <div class="game-header">
+        <span class="game-title">🪙 МОНЕТКА</span>
+        <button class="exit-btn" data-exit="coin">✕ Выйти</button>
     </div>
-
-    <!-- НАСТРОЙКИ -->
-    <div class="card">
-        <h3>⚙️ Настройки</h3>
-        <div class="settings-panel">
-            <div class="theme-btns">
-                <button class="theme-btn" data-theme="light">🌞 Светлая</button>
-                <button class="theme-btn" data-theme="gray">🌓 Серая</button>
-                <button class="theme-btn" data-theme="dark">🌙 Тёмная</button>
-            </div>
-            <label style="display: flex; align-items: center; gap: 8px;">
-                <input type="checkbox" id="vibrationToggle" checked> 📳 Вибрация
-            </label>
+    <div class="card" style="margin:0; padding:20px;">
+        <div class="bet-control">
+            <span>Ставка:</span>
+            <input type="number" id="coinBet" class="bet-input" value="10" step="5">
         </div>
+        <div style="display:flex; gap:15px; margin:20px 0;">
+            <button id="coinHeads" class="primary-btn" style="flex:1">🪙 Орёл</button>
+            <button id="coinTails" class="primary-btn" style="flex:1">🪙 Решка</button>
+        </div>
+        <div id="coinResult" class="win-text"></div>
     </div>
-    <footer>⚡ OFFICIALCASUAL · Демо-режим · Реальный счёт в разработке</footer>
 </div>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -341,18 +347,55 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // ========== НАСТРОЙКИ ==========
-    let settings = {
-        theme: localStorage.getItem('theme') || 'dark',
-        vibration: localStorage.getItem('vibration') !== 'false'
-    };
-
-    // ========== БАЛАНСЫ ==========
+    // ========== БАЛАНСЫ И НАСТРОЙКИ ==========
     let demoCoins = parseInt(localStorage.getItem('demoCoins') || '1000');
     let realBalance = { RUB: 0, USD: 0, EUR: 0 };
     let currentCurrency = localStorage.getItem('currentCurrency') || 'RUB';
 
-    // ========== ИГРА МИНЫ ==========
+    function updateUI() {
+        document.getElementById('demoBalance').innerText = demoCoins;
+        document.getElementById('realBalance').innerText = (realBalance[currentCurrency] || 0).toFixed(2);
+        document.getElementById('realCurr').innerText = currentCurrency;
+    }
+    function saveDemoCoins() { localStorage.setItem('demoCoins', demoCoins); updateUI(); }
+
+    // ========== ЗАГЛУШКИ ==========
+    document.getElementById('depositBtn').onclick = () => tg.showAlert('🚧 Функция в разработке. Скоро вы сможете играть на деньги');
+    document.getElementById('withdrawBtn').onclick = () => tg.showAlert('🚧 Функция в разработке. Скоро вы сможете играть на деньги');
+
+    // ========== ВАЛЮТЫ ==========
+    document.querySelectorAll('.currency-btn').forEach(btn => {
+        btn.onclick = () => {
+            currentCurrency = btn.dataset.cur;
+            localStorage.setItem('currentCurrency', currentCurrency);
+            document.querySelectorAll('.currency-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            updateUI();
+        };
+    });
+    document.querySelector('.currency-btn[data-cur="RUB"]').classList.add('active');
+    updateUI();
+
+    // ========== ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ ==========
+    function showPage(pageId) {
+        document.getElementById('mainPage').style.display = 'none';
+        document.querySelectorAll('.game-page').forEach(p => p.style.display = 'none');
+        document.getElementById(pageId).style.display = 'flex';
+    }
+    function showMain() {
+        document.getElementById('mainPage').style.display = 'block';
+        document.querySelectorAll('.game-page').forEach(p => p.style.display = 'none');
+        // сброс активных игр, чтобы не висели
+        if (crashInterval) { clearInterval(crashInterval); crashInterval = null; }
+    }
+    document.querySelectorAll('.game-choice-btn').forEach(btn => {
+        btn.onclick = () => showPage(`${btn.dataset.game}Page`);
+    });
+    document.querySelectorAll('.exit-btn').forEach(btn => {
+        btn.onclick = () => showMain();
+    });
+
+    // ========== МИНЫ ==========
     let minesState = {
         active: false,
         difficulty: 'medium',
@@ -363,17 +406,14 @@
         gameOver: false,
         totalMines: 5
     };
-
     const minesCount = { easy: 3, medium: 5, hard: 8 };
     const minesMultipliers = {
         easy:   [1, 1.2, 1.5, 2, 2.5, 3.2, 4, 5, 6, 7, 8, 9, 10, 12, 15],
         medium: [1, 1.2, 1.5, 2, 2.5, 3.2, 4, 5, 6.5, 8, 10, 12, 15, 18, 22],
         hard:   [1, 1.3, 1.7, 2.2, 3, 4, 5.5, 7.5, 10, 14, 18, 24, 32, 42, 55]
     };
-
-    function generateMinesBoard(diff) {
-        let total = 25;
-        let mines = minesCount[diff];
+    function generateBoard(diff) {
+        let total = 25, mines = minesCount[diff];
         let arr = Array(total).fill(false);
         for (let i = 0; i < mines; i++) arr[i] = true;
         for (let i = arr.length - 1; i > 0; i--) {
@@ -382,23 +422,18 @@
         }
         return arr;
     }
-
     function renderMinesGrid() {
         const grid = document.getElementById('minesGrid');
-        if (!grid) return;
         grid.innerHTML = '';
-        if (!minesState.active) {
+        if (!minesState.active && !minesState.gameOver) {
             for (let i = 0; i < 25; i++) {
-                let cell = document.createElement('div');
-                cell.className = 'cell';
-                cell.innerText = '❓';
+                let cell = document.createElement('div'); cell.className = 'cell'; cell.innerText = '❓';
                 grid.appendChild(cell);
             }
             return;
         }
         for (let i = 0; i < 25; i++) {
-            let cell = document.createElement('div');
-            cell.className = 'cell';
+            let cell = document.createElement('div'); cell.className = 'cell';
             if (minesState.revealed[i]) {
                 cell.classList.add('revealed-star');
                 cell.innerText = '⭐';
@@ -408,19 +443,23 @@
                 }
             } else {
                 cell.innerText = '❓';
+                if (!minesState.active && minesState.gameOver && minesState.board[i]) {
+                    cell.innerText = '💣';
+                    cell.classList.add('mine');
+                }
             }
-            cell.addEventListener('click', (idx => () => makeMinesMove(idx))(i));
+            if (!minesState.gameOver && minesState.active && !minesState.revealed[i]) {
+                cell.addEventListener('click', (idx => () => minesMove(idx))(i));
+            }
             grid.appendChild(cell);
         }
     }
-
-    function makeMinesMove(idx) {
+    function minesMove(idx) {
         if (!minesState.active || minesState.gameOver || minesState.revealed[idx]) return;
         if (minesState.board[idx]) {
             minesState.gameOver = true;
             minesState.active = false;
-            if (settings.vibration && navigator.vibrate) navigator.vibrate(200);
-            document.getElementById('minesStatus').innerHTML = '💥 ВЗРЫВ! Вы проиграли ставку.';
+            document.getElementById('minesStatus').innerHTML = '💥 ВЗРЫВ! Вы проиграли.';
             document.getElementById('cashoutMinesBtn').style.display = 'none';
             renderMinesGrid();
             return;
@@ -431,34 +470,26 @@
         minesState.currentWin = Math.floor(minesState.bet * mult);
         document.getElementById('minesWin').innerText = minesState.currentWin;
         document.getElementById('cashoutMinesBtn').style.display = 'block';
-        if (settings.vibration && navigator.vibrate) navigator.vibrate(50);
         renderMinesGrid();
         if (revealedCount === 25 - minesCount[minesState.difficulty]) {
             demoCoins += minesState.currentWin;
             saveDemoCoins();
-            updateUI();
             document.getElementById('minesStatus').innerHTML = '🏆 ПОБЕДА! Вы открыли все клетки!';
             minesState.active = false;
             document.getElementById('cashoutMinesBtn').style.display = 'none';
         }
     }
-
     function startMines() {
-        if (minesState.active) return;
         let bet = parseInt(document.getElementById('minesBet').value);
         if (isNaN(bet) || bet <= 0) bet = 10;
-        if (bet > demoCoins) {
-            tg.showAlert('❌ Не хватает демо-монет!');
-            return;
-        }
+        if (bet > demoCoins) { tg.showAlert('❌ Не хватает монет'); return; }
         demoCoins -= bet;
         saveDemoCoins();
-        updateUI();
         let diff = minesState.difficulty;
         minesState = {
             active: true,
             difficulty: diff,
-            board: generateMinesBoard(diff),
+            board: generateBoard(diff),
             revealed: Array(25).fill(false),
             bet: bet,
             currentWin: 0,
@@ -470,19 +501,28 @@
         document.getElementById('cashoutMinesBtn').style.display = 'none';
         renderMinesGrid();
     }
-
     function cashoutMines() {
         if (!minesState.active || minesState.gameOver) return;
         demoCoins += minesState.currentWin;
         saveDemoCoins();
-        updateUI();
         tg.showAlert(`✅ Вы забрали ${minesState.currentWin} монет!`);
         minesState.active = false;
         document.getElementById('cashoutMinesBtn').style.display = 'none';
         renderMinesGrid();
     }
+    document.getElementById('startMinesBtn').onclick = startMines;
+    document.getElementById('cashoutMinesBtn').onclick = cashoutMines;
+    document.querySelectorAll('#minesPage .diff-btn').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('#minesPage .diff-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            minesState.difficulty = btn.dataset.diff;
+        };
+    });
+    document.querySelector('#minesPage .diff-btn[data-diff="medium"]').classList.add('active');
+    renderMinesGrid();
 
-    // ========== ИГРА КРАШ ==========
+    // ========== КРАШ ==========
     let crashInterval = null;
     function startCrash() {
         if (crashInterval) return;
@@ -491,7 +531,6 @@
         if (bet > demoCoins) { tg.showAlert('❌ Не хватает монет'); return; }
         demoCoins -= bet;
         saveDemoCoins();
-        updateUI();
         let crashPoint = 1 + Math.random() * 9;
         let multiplier = 1;
         document.getElementById('crashMultiplier').innerText = multiplier.toFixed(2) + 'x';
@@ -499,12 +538,10 @@
         crashInterval = setInterval(() => {
             multiplier += 0.05;
             if (multiplier >= crashPoint) {
-                clearInterval(crashInterval);
-                crashInterval = null;
+                clearInterval(crashInterval); crashInterval = null;
                 document.getElementById('crashMultiplier').innerText = '💥 КРАШ!';
                 document.getElementById('cashoutCrashBtn').style.display = 'none';
                 document.getElementById('crashStatus').innerHTML = '💥 Проигрыш!';
-                if (settings.vibration && navigator.vibrate) navigator.vibrate(200);
                 return;
             }
             document.getElementById('crashMultiplier').innerText = multiplier.toFixed(2) + 'x';
@@ -513,18 +550,18 @@
     }
     function cashoutCrash() {
         if (!crashInterval) return;
-        clearInterval(crashInterval);
-        crashInterval = null;
+        clearInterval(crashInterval); crashInterval = null;
         let mult = parseFloat(document.getElementById('crashMultiplier').innerText);
         let bet = parseInt(document.getElementById('crashBet').value);
         let win = Math.floor(mult * bet);
         demoCoins += win;
         saveDemoCoins();
-        updateUI();
         tg.showAlert(`🎉 Вы выиграли ${win} монет!`);
         document.getElementById('cashoutCrashBtn').style.display = 'none';
         document.getElementById('crashStatus').innerHTML = `✅ Забрано ${mult.toFixed(2)}x → ${win} монет`;
     }
+    document.getElementById('startCrashBtn').onclick = startCrash;
+    document.getElementById('cashoutCrashBtn').onclick = cashoutCrash;
 
     // ========== ЛЕСТНИЦА ==========
     function ladderPlay(choice) {
@@ -536,16 +573,15 @@
             let win = bet * 2;
             demoCoins += win;
             saveDemoCoins();
-            updateUI();
             document.getElementById('ladderResult').innerHTML = `🎉 Угадал! Выигрыш ${win} монет.`;
-            if (settings.vibration && navigator.vibrate) navigator.vibrate(100);
         } else {
             demoCoins -= bet;
             saveDemoCoins();
-            updateUI();
-            document.getElementById('ladderResult').innerHTML = `❌ Не угадал! Выпало ${outcome === 'up' ? '⬆️' : '⬇️'}. Проигрыш ${bet}.`;
+            document.getElementById('ladderResult').innerHTML = `❌ Не угадал. Проигрыш ${bet}.`;
         }
     }
+    document.getElementById('ladderUp').onclick = () => ladderPlay('up');
+    document.getElementById('ladderDown').onclick = () => ladderPlay('down');
 
     // ========== МОНЕТКА ==========
     function coinPlay(choice) {
@@ -557,101 +593,24 @@
             let win = bet * 2;
             demoCoins += win;
             saveDemoCoins();
-            updateUI();
             document.getElementById('coinResult').innerHTML = `🎉 Угадал! +${win} монет.`;
-            if (settings.vibration && navigator.vibrate) navigator.vibrate(100);
         } else {
             demoCoins -= bet;
             saveDemoCoins();
-            updateUI();
             document.getElementById('coinResult').innerHTML = `❌ Не угадал. Проигрыш ${bet}.`;
         }
     }
-
-    // ========== ОБЩИЕ ФУНКЦИИ ==========
-    function updateUI() {
-        document.getElementById('demoBalance').innerText = demoCoins;
-        document.getElementById('realBalance').innerText = (realBalance[currentCurrency] || 0).toFixed(2);
-        document.getElementById('realCurr').innerText = currentCurrency;
-    }
-    function saveDemoCoins() { localStorage.setItem('demoCoins', demoCoins); }
-
-    // ========== ЗАГЛУШКИ ПОПОЛНЕНИЯ/ВЫВОДА ==========
-    document.getElementById('depositBtn').onclick = () => tg.showAlert('🚧 Функция в разработке. Скоро вы сможете играть на деньги');
-    document.getElementById('withdrawBtn').onclick = () => tg.showAlert('🚧 Функция в разработке. Скоро вы сможете играть на деньги');
-
-    // ========== ПЕРЕКЛЮЧЕНИЕ ВАЛЮТЫ ==========
-    document.querySelectorAll('.currency-btn').forEach(btn => {
-        btn.onclick = () => {
-            currentCurrency = btn.dataset.cur;
-            localStorage.setItem('currentCurrency', currentCurrency);
-            document.querySelectorAll('.currency-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            updateUI();
-        };
-    });
-
-    // ========== ПЕРЕКЛЮЧЕНИЕ ИГР ==========
-    function switchGame(gameId) {
-        document.querySelectorAll('.game-panel').forEach(panel => panel.classList.remove('active'));
-        document.getElementById(`${gameId}Panel`).classList.add('active');
-        document.querySelectorAll('.game-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelector(`.game-btn[data-game="${gameId}"]`).classList.add('active');
-        if (crashInterval) { clearInterval(crashInterval); crashInterval = null; }
-    }
-
-    document.querySelectorAll('.game-btn').forEach(btn => {
-        btn.onclick = () => switchGame(btn.dataset.game);
-    });
-
-    // ========== СЛОЖНОСТЬ МИН ==========
-    document.querySelectorAll('.difficulty-btn').forEach(btn => {
-        btn.onclick = () => {
-            document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            minesState.difficulty = btn.dataset.diff;
-        };
-    });
-    document.querySelector('.difficulty-btn[data-diff="medium"]').classList.add('active');
-
-    // ========== ПОДКЛЮЧАЕМ КНОПКИ ==========
-    document.getElementById('startMinesBtn').onclick = startMines;
-    document.getElementById('cashoutMinesBtn').onclick = cashoutMines;
-    document.getElementById('startCrashBtn').onclick = startCrash;
-    document.getElementById('cashoutCrashBtn').onclick = cashoutCrash;
-    document.getElementById('ladderUp').onclick = () => ladderPlay('up');
-    document.getElementById('ladderDown').onclick = () => ladderPlay('down');
     document.getElementById('coinHeads').onclick = () => coinPlay('heads');
     document.getElementById('coinTails').onclick = () => coinPlay('tails');
 
-    // ========== ТЕМА ==========
+    // ========== ТЕМЫ ==========
+    const themes = { light: 'light', gray: 'gray', dark: 'dark' };
     function applyTheme(theme) {
         document.body.className = theme;
-        settings.theme = theme;
         localStorage.setItem('theme', theme);
-        document.querySelectorAll('.theme-btn').forEach(btn => {
-            if (btn.dataset.theme === theme) btn.classList.add('active');
-            else btn.classList.remove('active');
-        });
     }
-    document.querySelectorAll('.theme-btn').forEach(btn => {
-        btn.onclick = () => applyTheme(btn.dataset.theme);
-    });
-
-    // ========== ВИБРАЦИЯ ==========
-    const vibeToggle = document.getElementById('vibrationToggle');
-    vibeToggle.checked = settings.vibration;
-    vibeToggle.onchange = () => {
-        settings.vibration = vibeToggle.checked;
-        localStorage.setItem('vibration', settings.vibration);
-    };
-
-    // ========== ИНИЦИАЛИЗАЦИЯ ==========
-    applyTheme(settings.theme);
-    document.querySelector('.currency-btn[data-cur="RUB"]').classList.add('active');
-    updateUI();
-    renderMinesGrid();
-    switchGame('mines');
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    applyTheme(savedTheme);
 </script>
 </body>
 </html>
