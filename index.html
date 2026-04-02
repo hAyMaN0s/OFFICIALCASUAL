@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>OFFICIALCASUAL · Главная</title>
+    <title>OFFICIALCASUAL · Казино</title>
     <style>
         * {
             box-sizing: border-box;
@@ -21,10 +21,7 @@
         body.light { background: #f5f7fa; color: #1e293b; }
         body.gray  { background: #2d2f36; color: #e2e8f0; }
 
-        .container {
-            max-width: 550px;
-            margin: 0 auto;
-        }
+        .container { max-width: 550px; margin: 0 auto; }
         .card {
             background: #1e1f23;
             border-radius: 32px;
@@ -51,10 +48,7 @@
             font-weight: bold;
             font-size: 1.3rem;
         }
-        .currency-switch {
-            display: flex;
-            gap: 10px;
-        }
+        .currency-switch { display: flex; gap: 10px; }
         .currency-btn {
             background: none;
             border: 1px solid currentColor;
@@ -87,7 +81,7 @@
         }
         .action-btn:active { transform: scale(0.97); }
 
-        /* ВЫБОР ИГРЫ (БОЛЬШИЕ КНОПКИ) */
+        /* ВЫБОР ИГРЫ */
         .game-buttons {
             display: flex;
             flex-direction: column;
@@ -103,11 +97,10 @@
             cursor: pointer;
             color: white;
             text-align: center;
-            transition: 0.1s;
         }
         .game-choice-btn:active { transform: scale(0.98); }
 
-        /* СТРАНИЦА ИГРЫ (полный экран, без лишнего) */
+        /* СТРАНИЦА ИГРЫ */
         .game-page {
             position: fixed;
             top: 0;
@@ -139,12 +132,9 @@
             cursor: pointer;
             color: white;
         }
-        .game-title {
-            font-size: 1.8rem;
-            font-weight: bold;
-        }
+        .game-title { font-size: 1.8rem; font-weight: bold; }
 
-        /* ИГРОВЫЕ ЭЛЕМЕНТЫ */
+        /* ОБЩИЕ ЭЛЕМЕНТЫ */
         .difficulty-group {
             display: flex;
             gap: 12px;
@@ -160,10 +150,7 @@
             cursor: pointer;
             color: white;
         }
-        .diff-btn.active {
-            background: gold;
-            color: black;
-        }
+        .diff-btn.active { background: gold; color: black; }
         .bet-control {
             display: flex;
             gap: 12px;
@@ -187,6 +174,36 @@
             cursor: pointer;
             color: white;
         }
+        .ladder-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+        .ladder-btn {
+            background: #2c3e66;
+            border: none;
+            border-radius: 60px;
+            padding: 15px 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            min-width: 70px;
+        }
+        .ladder-step {
+            text-align: center;
+            font-size: 2rem;
+            margin: 15px 0;
+        }
+        .crash-number {
+            font-size: 3rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 30px 0;
+        }
+        .win-text { text-align: center; margin: 15px 0; font-size: 1.2rem; }
         .grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -205,35 +222,12 @@
             cursor: pointer;
         }
         body.light .cell { background: #cbd5e1; }
-        .cell.revealed-star {
-            background: #1f4d2e;
-            cursor: default;
-        }
-        .cell.mine {
-            background: #9b2c2c;
-        }
-        .crash-number {
-            font-size: 3rem;
-            font-weight: bold;
-            text-align: center;
-            margin: 30px 0;
-        }
-        .win-text {
-            text-align: center;
-            margin: 15px 0;
-            font-size: 1.2rem;
-        }
-        footer {
-            text-align: center;
-            font-size: 0.75rem;
-            opacity: 0.6;
-            margin-top: 30px;
-        }
+        .cell.revealed-star { background: #1f4d2e; cursor: default; }
+        .cell.mine { background: #9b2c2c; }
     </style>
 </head>
 <body>
 <div class="container" id="mainPage">
-    <!-- ПРОФИЛЬ -->
     <div class="card">
         <div class="balance-row">
             <span class="balance-box">🎰 Демо: <strong id="demoBalance">1000</strong></span>
@@ -249,8 +243,6 @@
             <button id="withdrawBtn" class="action-btn">🏧 Вывести</button>
         </div>
     </div>
-
-    <!-- ВЫБОР ИГРЫ (БОЛЬШИЕ КНОПКИ) -->
     <div class="card">
         <div class="game-buttons">
             <button class="game-choice-btn" data-game="mines">💣 МИНЫ</button>
@@ -262,96 +254,42 @@
     <footer>⚡ OFFICIALCASUAL · Демо-режим</footer>
 </div>
 
-<!-- СТРАНИЦА МИНЫ -->
-<div id="minesPage" class="game-page">
-    <div class="game-header">
-        <span class="game-title">💣 МИНЫ</span>
-        <button class="exit-btn" data-exit="mines">✕ Выйти</button>
-    </div>
-    <div class="card" style="margin:0; padding:20px;">
-        <div class="difficulty-group">
-            <button class="diff-btn" data-diff="easy">🟢 Лёгкая</button>
-            <button class="diff-btn" data-diff="medium">🟡 Средняя</button>
-            <button class="diff-btn" data-diff="hard">🔴 Сложная</button>
-        </div>
-        <div class="bet-control">
-            <span>Ставка:</span>
-            <input type="number" id="minesBet" class="bet-input" value="10" step="5">
-            <button id="startMinesBtn" class="primary-btn">🎲 Новая игра</button>
-        </div>
-        <div id="minesGrid" class="grid"></div>
-        <div class="win-text">💰 Выигрыш: <strong id="minesWin">0</strong></div>
-        <button id="cashoutMinesBtn" style="display:none; width:100%;" class="primary-btn">✅ ЗАБРАТЬ</button>
-        <div id="minesStatus" class="win-text"></div>
-    </div>
-</div>
+<!-- МИНЫ -->
+<div id="minesPage" class="game-page"><div class="game-header"><span class="game-title">💣 МИНЫ</span><button class="exit-btn" data-exit="mines">✕ Выйти</button></div>
+<div class="card"><div class="difficulty-group"><button class="diff-btn" data-diff="easy">🟢 Лёгкая</button><button class="diff-btn" data-diff="medium">🟡 Средняя</button><button class="diff-btn" data-diff="hard">🔴 Сложная</button></div>
+<div class="bet-control"><span>Ставка:</span><input type="number" id="minesBet" class="bet-input" value="10" step="5"><button id="startMinesBtn" class="primary-btn">🎲 Новая игра</button></div>
+<div id="minesGrid" class="grid"></div><div class="win-text">💰 Выигрыш: <strong id="minesWin">0</strong></div>
+<button id="cashoutMinesBtn" style="display:none; width:100%;" class="primary-btn">✅ ЗАБРАТЬ</button><div id="minesStatus" class="win-text"></div></div></div>
 
-<!-- СТРАНИЦА КРАШ -->
-<div id="crashPage" class="game-page">
-    <div class="game-header">
-        <span class="game-title">📈 КРАШ</span>
-        <button class="exit-btn" data-exit="crash">✕ Выйти</button>
-    </div>
-    <div class="card" style="margin:0; padding:20px;">
-        <div class="bet-control">
-            <span>Ставка:</span>
-            <input type="number" id="crashBet" class="bet-input" value="10" step="5">
-            <button id="startCrashBtn" class="primary-btn">📈 Запустить</button>
-        </div>
-        <div class="crash-number" id="crashMultiplier">1.00x</div>
-        <button id="cashoutCrashBtn" style="display:none; width:100%;" class="primary-btn">✅ ЗАБРАТЬ</button>
-        <div id="crashStatus" class="win-text"></div>
-    </div>
-</div>
+<!-- КРАШ -->
+<div id="crashPage" class="game-page"><div class="game-header"><span class="game-title">📈 КРАШ</span><button class="exit-btn" data-exit="crash">✕ Выйти</button></div>
+<div class="card"><div class="bet-control"><span>Ставка:</span><input type="number" id="crashBet" class="bet-input" value="10" step="5"><button id="startCrashBtn" class="primary-btn" style="margin-top:8px;">📈 Запустить</button></div>
+<div class="crash-number" id="crashMultiplier">1.00x</div><button id="cashoutCrashBtn" style="display:none; width:100%;" class="primary-btn">✅ ЗАБРАТЬ</button><div id="crashStatus" class="win-text"></div></div></div>
 
-<!-- СТРАНИЦА ЛЕСТНИЦА -->
-<div id="ladderPage" class="game-page">
-    <div class="game-header">
-        <span class="game-title">🪜 ЛЕСТНИЦА</span>
-        <button class="exit-btn" data-exit="ladder">✕ Выйти</button>
-    </div>
-    <div class="card" style="margin:0; padding:20px;">
-        <div class="bet-control">
-            <span>Ставка:</span>
-            <input type="number" id="ladderBet" class="bet-input" value="10" step="5">
-        </div>
-        <div style="display:flex; gap:15px; margin:20px 0;">
-            <button id="ladderUp" class="primary-btn" style="flex:1">⬆️ ВВЕРХ</button>
-            <button id="ladderDown" class="primary-btn" style="flex:1">⬇️ ВНИЗ</button>
-        </div>
-        <div id="ladderResult" class="win-text"></div>
-    </div>
-</div>
+<!-- ЛЕСТНИЦА (НОВАЯ) -->
+<div id="ladderPage" class="game-page"><div class="game-header"><span class="game-title">🪜 ЛЕСТНИЦА</span><button class="exit-btn" data-exit="ladder">✕ Выйти</button></div>
+<div class="card"><div class="difficulty-group"><button class="diff-btn" data-ladder-diff="easy">🟢 Лёгкая</button><button class="diff-btn" data-ladder-diff="medium">🟡 Средняя</button><button class="diff-btn" data-ladder-diff="hard">🔴 Сложная</button></div>
+<div class="bet-control"><span>Ставка:</span><input type="number" id="ladderBet" class="bet-input" value="10" step="5"><button id="startLadderBtn" class="primary-btn">🎲 Начать подъём</button></div>
+<div id="ladderVisual" class="ladder-step">🏔️ Нажми "Начать"</div>
+<div id="ladderButtons" class="ladder-buttons"></div><div class="win-text">💰 Текущий выигрыш: <strong id="ladderWin">0</strong></div>
+<button id="cashoutLadderBtn" style="display:none; width:100%; margin-top:12px;" class="primary-btn">✅ ЗАБРАТЬ ПРИЗ</button>
+<div id="ladderStatus" class="win-text"></div></div></div>
 
-<!-- СТРАНИЦА МОНЕТКА -->
-<div id="coinPage" class="game-page">
-    <div class="game-header">
-        <span class="game-title">🪙 МОНЕТКА</span>
-        <button class="exit-btn" data-exit="coin">✕ Выйти</button>
-    </div>
-    <div class="card" style="margin:0; padding:20px;">
-        <div class="bet-control">
-            <span>Ставка:</span>
-            <input type="number" id="coinBet" class="bet-input" value="10" step="5">
-        </div>
-        <div style="display:flex; gap:15px; margin:20px 0;">
-            <button id="coinHeads" class="primary-btn" style="flex:1">🪙 Орёл</button>
-            <button id="coinTails" class="primary-btn" style="flex:1">🪙 Решка</button>
-        </div>
-        <div id="coinResult" class="win-text"></div>
-    </div>
-</div>
+<!-- МОНЕТКА -->
+<div id="coinPage" class="game-page"><div class="game-header"><span class="game-title">🪙 МОНЕТКА</span><button class="exit-btn" data-exit="coin">✕ Выйти</button></div>
+<div class="card"><div class="bet-control"><span>Ставка:</span><input type="number" id="coinBet" class="bet-input" value="10" step="5"></div>
+<div style="display:flex; gap:15px; margin:20px 0;"><button id="coinHeads" class="primary-btn" style="flex:1">🪙 Орёл</button><button id="coinTails" class="primary-btn" style="flex:1">🪙 Решка</button></div>
+<div id="coinResult" class="win-text"></div></div></div>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // ========== БАЛАНСЫ И НАСТРОЙКИ ==========
+    // БАЛАНСЫ
     let demoCoins = parseInt(localStorage.getItem('demoCoins') || '1000');
     let realBalance = { RUB: 0, USD: 0, EUR: 0 };
     let currentCurrency = localStorage.getItem('currentCurrency') || 'RUB';
-
     function updateUI() {
         document.getElementById('demoBalance').innerText = demoCoins;
         document.getElementById('realBalance').innerText = (realBalance[currentCurrency] || 0).toFixed(2);
@@ -359,11 +297,9 @@
     }
     function saveDemoCoins() { localStorage.setItem('demoCoins', demoCoins); updateUI(); }
 
-    // ========== ЗАГЛУШКИ ==========
     document.getElementById('depositBtn').onclick = () => tg.showAlert('🚧 Функция в разработке. Скоро вы сможете играть на деньги');
     document.getElementById('withdrawBtn').onclick = () => tg.showAlert('🚧 Функция в разработке. Скоро вы сможете играть на деньги');
 
-    // ========== ВАЛЮТЫ ==========
     document.querySelectorAll('.currency-btn').forEach(btn => {
         btn.onclick = () => {
             currentCurrency = btn.dataset.cur;
@@ -376,16 +312,16 @@
     document.querySelector('.currency-btn[data-cur="RUB"]').classList.add('active');
     updateUI();
 
-    // ========== ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ ==========
+    // НАВИГАЦИЯ
     function showPage(pageId) {
         document.getElementById('mainPage').style.display = 'none';
         document.querySelectorAll('.game-page').forEach(p => p.style.display = 'none');
         document.getElementById(pageId).style.display = 'flex';
+        if (crashInterval) { clearInterval(crashInterval); crashInterval = null; }
     }
     function showMain() {
         document.getElementById('mainPage').style.display = 'block';
         document.querySelectorAll('.game-page').forEach(p => p.style.display = 'none');
-        // сброс активных игр, чтобы не висели
         if (crashInterval) { clearInterval(crashInterval); crashInterval = null; }
     }
     document.querySelectorAll('.game-choice-btn').forEach(btn => {
@@ -396,74 +332,34 @@
     });
 
     // ========== МИНЫ ==========
-    let minesState = {
-        active: false,
-        difficulty: 'medium',
-        board: [],
-        revealed: [],
-        bet: 0,
-        currentWin: 0,
-        gameOver: false,
-        totalMines: 5
-    };
+    let minesState = { active: false, difficulty: 'medium', board: [], revealed: [], bet: 0, currentWin: 0, gameOver: false, totalMines: 5 };
     const minesCount = { easy: 3, medium: 5, hard: 8 };
     const minesMultipliers = {
-        easy:   [1, 1.2, 1.5, 2, 2.5, 3.2, 4, 5, 6, 7, 8, 9, 10, 12, 15],
+        easy: [1, 1.2, 1.5, 2, 2.5, 3.2, 4, 5, 6, 7, 8, 9, 10, 12, 15],
         medium: [1, 1.2, 1.5, 2, 2.5, 3.2, 4, 5, 6.5, 8, 10, 12, 15, 18, 22],
-        hard:   [1, 1.3, 1.7, 2.2, 3, 4, 5.5, 7.5, 10, 14, 18, 24, 32, 42, 55]
+        hard: [1, 1.3, 1.7, 2.2, 3, 4, 5.5, 7.5, 10, 14, 18, 24, 32, 42, 55]
     };
     function generateBoard(diff) {
         let total = 25, mines = minesCount[diff];
         let arr = Array(total).fill(false);
         for (let i = 0; i < mines; i++) arr[i] = true;
-        for (let i = arr.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [arr[i], arr[j]] = [arr[j], arr[i]];
-        }
+        for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; }
         return arr;
     }
     function renderMinesGrid() {
-        const grid = document.getElementById('minesGrid');
-        grid.innerHTML = '';
-        if (!minesState.active && !minesState.gameOver) {
-            for (let i = 0; i < 25; i++) {
-                let cell = document.createElement('div'); cell.className = 'cell'; cell.innerText = '❓';
-                grid.appendChild(cell);
-            }
-            return;
-        }
+        const grid = document.getElementById('minesGrid'); grid.innerHTML = '';
+        if (!minesState.active && !minesState.gameOver) { for (let i = 0; i < 25; i++) { let cell = document.createElement('div'); cell.className = 'cell'; cell.innerText = '❓'; grid.appendChild(cell); } return; }
         for (let i = 0; i < 25; i++) {
             let cell = document.createElement('div'); cell.className = 'cell';
-            if (minesState.revealed[i]) {
-                cell.classList.add('revealed-star');
-                cell.innerText = '⭐';
-                if (minesState.gameOver && minesState.board[i]) {
-                    cell.innerText = '💣';
-                    cell.classList.add('mine');
-                }
-            } else {
-                cell.innerText = '❓';
-                if (!minesState.active && minesState.gameOver && minesState.board[i]) {
-                    cell.innerText = '💣';
-                    cell.classList.add('mine');
-                }
-            }
-            if (!minesState.gameOver && minesState.active && !minesState.revealed[i]) {
-                cell.addEventListener('click', (idx => () => minesMove(idx))(i));
-            }
+            if (minesState.revealed[i]) { cell.classList.add('revealed-star'); cell.innerText = '⭐'; if (minesState.gameOver && minesState.board[i]) { cell.innerText = '💣'; cell.classList.add('mine'); } }
+            else { cell.innerText = '❓'; if (!minesState.active && minesState.gameOver && minesState.board[i]) { cell.innerText = '💣'; cell.classList.add('mine'); } }
+            if (!minesState.gameOver && minesState.active && !minesState.revealed[i]) cell.addEventListener('click', (idx => () => minesMove(idx))(i));
             grid.appendChild(cell);
         }
     }
     function minesMove(idx) {
         if (!minesState.active || minesState.gameOver || minesState.revealed[idx]) return;
-        if (minesState.board[idx]) {
-            minesState.gameOver = true;
-            minesState.active = false;
-            document.getElementById('minesStatus').innerHTML = '💥 ВЗРЫВ! Вы проиграли.';
-            document.getElementById('cashoutMinesBtn').style.display = 'none';
-            renderMinesGrid();
-            return;
-        }
+        if (minesState.board[idx]) { minesState.gameOver = true; minesState.active = false; document.getElementById('minesStatus').innerHTML = '💥 ВЗРЫВ! Вы проиграли.'; document.getElementById('cashoutMinesBtn').style.display = 'none'; renderMinesGrid(); return; }
         minesState.revealed[idx] = true;
         let revealedCount = minesState.revealed.filter(v => v === true).length;
         let mult = minesMultipliers[minesState.difficulty][revealedCount] || 1;
@@ -471,53 +367,22 @@
         document.getElementById('minesWin').innerText = minesState.currentWin;
         document.getElementById('cashoutMinesBtn').style.display = 'block';
         renderMinesGrid();
-        if (revealedCount === 25 - minesCount[minesState.difficulty]) {
-            demoCoins += minesState.currentWin;
-            saveDemoCoins();
-            document.getElementById('minesStatus').innerHTML = '🏆 ПОБЕДА! Вы открыли все клетки!';
-            minesState.active = false;
-            document.getElementById('cashoutMinesBtn').style.display = 'none';
-        }
+        if (revealedCount === 25 - minesCount[minesState.difficulty]) { demoCoins += minesState.currentWin; saveDemoCoins(); document.getElementById('minesStatus').innerHTML = '🏆 ПОБЕДА!'; minesState.active = false; document.getElementById('cashoutMinesBtn').style.display = 'none'; }
     }
     function startMines() {
         let bet = parseInt(document.getElementById('minesBet').value);
         if (isNaN(bet) || bet <= 0) bet = 10;
         if (bet > demoCoins) { tg.showAlert('❌ Не хватает монет'); return; }
-        demoCoins -= bet;
-        saveDemoCoins();
+        demoCoins -= bet; saveDemoCoins();
         let diff = minesState.difficulty;
-        minesState = {
-            active: true,
-            difficulty: diff,
-            board: generateBoard(diff),
-            revealed: Array(25).fill(false),
-            bet: bet,
-            currentWin: 0,
-            gameOver: false,
-            totalMines: minesCount[diff]
-        };
-        document.getElementById('minesWin').innerText = '0';
-        document.getElementById('minesStatus').innerHTML = '🎲 Игра началась! Открывайте клетки.';
-        document.getElementById('cashoutMinesBtn').style.display = 'none';
-        renderMinesGrid();
+        minesState = { active: true, difficulty: diff, board: generateBoard(diff), revealed: Array(25).fill(false), bet: bet, currentWin: 0, gameOver: false, totalMines: minesCount[diff] };
+        document.getElementById('minesWin').innerText = '0'; document.getElementById('minesStatus').innerHTML = '🎲 Игра началась!'; document.getElementById('cashoutMinesBtn').style.display = 'none'; renderMinesGrid();
     }
-    function cashoutMines() {
-        if (!minesState.active || minesState.gameOver) return;
-        demoCoins += minesState.currentWin;
-        saveDemoCoins();
-        tg.showAlert(`✅ Вы забрали ${minesState.currentWin} монет!`);
-        minesState.active = false;
-        document.getElementById('cashoutMinesBtn').style.display = 'none';
-        renderMinesGrid();
-    }
+    function cashoutMines() { if (!minesState.active || minesState.gameOver) return; demoCoins += minesState.currentWin; saveDemoCoins(); tg.showAlert(`✅ Вы забрали ${minesState.currentWin} монет!`); minesState.active = false; document.getElementById('cashoutMinesBtn').style.display = 'none'; renderMinesGrid(); }
     document.getElementById('startMinesBtn').onclick = startMines;
     document.getElementById('cashoutMinesBtn').onclick = cashoutMines;
     document.querySelectorAll('#minesPage .diff-btn').forEach(btn => {
-        btn.onclick = () => {
-            document.querySelectorAll('#minesPage .diff-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            minesState.difficulty = btn.dataset.diff;
-        };
+        btn.onclick = () => { document.querySelectorAll('#minesPage .diff-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); minesState.difficulty = btn.dataset.diff; };
     });
     document.querySelector('#minesPage .diff-btn[data-diff="medium"]').classList.add('active');
     renderMinesGrid();
@@ -529,59 +394,63 @@
         let bet = parseInt(document.getElementById('crashBet').value);
         if (isNaN(bet) || bet <= 0) bet = 10;
         if (bet > demoCoins) { tg.showAlert('❌ Не хватает монет'); return; }
-        demoCoins -= bet;
-        saveDemoCoins();
+        demoCoins -= bet; saveDemoCoins();
         let crashPoint = 1 + Math.random() * 9;
         let multiplier = 1;
         document.getElementById('crashMultiplier').innerText = multiplier.toFixed(2) + 'x';
         document.getElementById('cashoutCrashBtn').style.display = 'block';
         crashInterval = setInterval(() => {
             multiplier += 0.05;
-            if (multiplier >= crashPoint) {
-                clearInterval(crashInterval); crashInterval = null;
-                document.getElementById('crashMultiplier').innerText = '💥 КРАШ!';
-                document.getElementById('cashoutCrashBtn').style.display = 'none';
-                document.getElementById('crashStatus').innerHTML = '💥 Проигрыш!';
-                return;
-            }
+            if (multiplier >= crashPoint) { clearInterval(crashInterval); crashInterval = null; document.getElementById('crashMultiplier').innerText = '💥 КРАШ!'; document.getElementById('cashoutCrashBtn').style.display = 'none'; document.getElementById('crashStatus').innerHTML = '💥 Проигрыш!'; return; }
             document.getElementById('crashMultiplier').innerText = multiplier.toFixed(2) + 'x';
             document.getElementById('cashoutCrashBtn').innerText = `✅ ЗАБРАТЬ ${multiplier.toFixed(2)}x`;
         }, 150);
     }
-    function cashoutCrash() {
-        if (!crashInterval) return;
-        clearInterval(crashInterval); crashInterval = null;
-        let mult = parseFloat(document.getElementById('crashMultiplier').innerText);
-        let bet = parseInt(document.getElementById('crashBet').value);
-        let win = Math.floor(mult * bet);
-        demoCoins += win;
-        saveDemoCoins();
-        tg.showAlert(`🎉 Вы выиграли ${win} монет!`);
-        document.getElementById('cashoutCrashBtn').style.display = 'none';
-        document.getElementById('crashStatus').innerHTML = `✅ Забрано ${mult.toFixed(2)}x → ${win} монет`;
-    }
+    function cashoutCrash() { if (!crashInterval) return; clearInterval(crashInterval); crashInterval = null; let mult = parseFloat(document.getElementById('crashMultiplier').innerText); let bet = parseInt(document.getElementById('crashBet').value); let win = Math.floor(mult * bet); demoCoins += win; saveDemoCoins(); tg.showAlert(`🎉 Вы выиграли ${win} монет!`); document.getElementById('cashoutCrashBtn').style.display = 'none'; document.getElementById('crashStatus').innerHTML = `✅ Забрано ${mult.toFixed(2)}x → ${win} монет`; }
     document.getElementById('startCrashBtn').onclick = startCrash;
     document.getElementById('cashoutCrashBtn').onclick = cashoutCrash;
 
-    // ========== ЛЕСТНИЦА ==========
-    function ladderPlay(choice) {
+    // ========== ЛЕСТНИЦА (ПРОГРЕССИЯ) ==========
+    let ladderState = { active: false, difficulty: 'easy', bet: 0, step: 0, currentWin: 0, maxSteps: 5, multipliers: { easy: [1, 1.3, 1.7, 2.2, 3, 4, 5.5, 7.5, 10, 14, 18], medium: [1, 1.4, 1.9, 2.5, 3.5, 5, 7, 10, 14, 19, 25], hard: [1, 1.6, 2.2, 3, 4.5, 6.5, 9, 13, 18, 25, 35] } };
+    function getLadderOptions() { let min = 2; let max = { easy: 4, medium: 6, hard: 8 }[ladderState.difficulty]; let options = Math.min(min + ladderState.step, max); return options; }
+    function renderLadder() {
+        let container = document.getElementById('ladderButtons'); container.innerHTML = '';
+        let optionsCount = getLadderOptions();
+        for (let i = 1; i <= optionsCount; i++) { let btn = document.createElement('button'); btn.className = 'ladder-btn'; btn.innerText = `🪜 ${i}`; btn.onclick = () => ladderChoose(i); container.appendChild(btn); }
+        let totalSteps = { easy: 8, medium: 10, hard: 10 }[ladderState.difficulty];
+        document.getElementById('ladderVisual').innerHTML = `🏔️ Ступень ${ladderState.step + 1} / ${totalSteps} (Лестниц: ${optionsCount})`;
+    }
+    function ladderChoose(selected) {
+        if (!ladderState.active) return;
+        let optionsCount = getLadderOptions();
+        let safe = Math.floor(Math.random() * optionsCount) + 1;
+        if (selected !== safe) { ladderState.active = false; document.getElementById('ladderStatus').innerHTML = '👻 Призрак съел пикмена! Вы проиграли.'; document.getElementById('cashoutLadderBtn').style.display = 'none'; renderLadder(); return; }
+        ladderState.step++;
+        let multiplier = ladderState.multipliers[ladderState.difficulty][ladderState.step] || ladderState.multipliers[ladderState.difficulty].slice(-1)[0];
+        ladderState.currentWin = Math.floor(ladderState.bet * multiplier);
+        document.getElementById('ladderWin').innerText = ladderState.currentWin;
+        document.getElementById('cashoutLadderBtn').style.display = 'block';
+        let totalSteps = { easy: 8, medium: 10, hard: 10 }[ladderState.difficulty];
+        if (ladderState.step >= totalSteps) { demoCoins += ladderState.currentWin; saveDemoCoins(); ladderState.active = false; document.getElementById('ladderStatus').innerHTML = '🏆 ПОБЕДА! Вы достигли вершины!'; document.getElementById('cashoutLadderBtn').style.display = 'none'; }
+        renderLadder();
+    }
+    function startLadder() {
+        if (ladderState.active) return;
         let bet = parseInt(document.getElementById('ladderBet').value);
         if (isNaN(bet) || bet <= 0) bet = 10;
         if (bet > demoCoins) { tg.showAlert('❌ Не хватает монет'); return; }
-        let outcome = Math.random() < 0.5 ? 'up' : 'down';
-        if (choice === outcome) {
-            let win = bet * 2;
-            demoCoins += win;
-            saveDemoCoins();
-            document.getElementById('ladderResult').innerHTML = `🎉 Угадал! Выигрыш ${win} монет.`;
-        } else {
-            demoCoins -= bet;
-            saveDemoCoins();
-            document.getElementById('ladderResult').innerHTML = `❌ Не угадал. Проигрыш ${bet}.`;
-        }
+        demoCoins -= bet; saveDemoCoins();
+        let diff = document.querySelector('#ladderPage .diff-btn.active')?.dataset.ladderDiff || 'easy';
+        ladderState = { active: true, difficulty: diff, bet: bet, step: 0, currentWin: 0, maxSteps: { easy: 8, medium: 10, hard: 10 }[diff], multipliers: { easy: [1, 1.3, 1.7, 2.2, 3, 4, 5.5, 7.5, 10, 14, 18], medium: [1, 1.4, 1.9, 2.5, 3.5, 5, 7, 10, 14, 19, 25], hard: [1, 1.6, 2.2, 3, 4.5, 6.5, 9, 13, 18, 25, 35] }[diff] };
+        document.getElementById('ladderWin').innerText = '0'; document.getElementById('ladderStatus').innerHTML = '⬆️ Выбери лестницу!'; document.getElementById('cashoutLadderBtn').style.display = 'none'; renderLadder();
     }
-    document.getElementById('ladderUp').onclick = () => ladderPlay('up');
-    document.getElementById('ladderDown').onclick = () => ladderPlay('down');
+    function cashoutLadder() { if (!ladderState.active) return; demoCoins += ladderState.currentWin; saveDemoCoins(); tg.showAlert(`✅ Вы забрали ${ladderState.currentWin} монет!`); ladderState.active = false; document.getElementById('cashoutLadderBtn').style.display = 'none'; renderLadder(); }
+    document.getElementById('startLadderBtn').onclick = startLadder;
+    document.getElementById('cashoutLadderBtn').onclick = cashoutLadder;
+    document.querySelectorAll('#ladderPage .diff-btn').forEach(btn => {
+        btn.onclick = () => { document.querySelectorAll('#ladderPage .diff-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); if (!ladderState.active) { ladderState.difficulty = btn.dataset.ladderDiff; } };
+    });
+    document.querySelector('#ladderPage .diff-btn[data-ladder-diff="easy"]').classList.add('active');
 
     // ========== МОНЕТКА ==========
     function coinPlay(choice) {
@@ -589,26 +458,14 @@
         if (isNaN(bet) || bet <= 0) bet = 10;
         if (bet > demoCoins) { tg.showAlert('❌ Не хватает монет'); return; }
         let outcome = Math.random() < 0.5 ? 'heads' : 'tails';
-        if (choice === outcome) {
-            let win = bet * 2;
-            demoCoins += win;
-            saveDemoCoins();
-            document.getElementById('coinResult').innerHTML = `🎉 Угадал! +${win} монет.`;
-        } else {
-            demoCoins -= bet;
-            saveDemoCoins();
-            document.getElementById('coinResult').innerHTML = `❌ Не угадал. Проигрыш ${bet}.`;
-        }
+        if (choice === outcome) { let win = bet * 2; demoCoins += win; saveDemoCoins(); document.getElementById('coinResult').innerHTML = `🎉 Угадал! +${win} монет.`; }
+        else { demoCoins -= bet; saveDemoCoins(); document.getElementById('coinResult').innerHTML = `❌ Не угадал. Проигрыш ${bet}.`; }
     }
     document.getElementById('coinHeads').onclick = () => coinPlay('heads');
     document.getElementById('coinTails').onclick = () => coinPlay('tails');
 
-    // ========== ТЕМЫ ==========
-    const themes = { light: 'light', gray: 'gray', dark: 'dark' };
-    function applyTheme(theme) {
-        document.body.className = theme;
-        localStorage.setItem('theme', theme);
-    }
+    // ТЕМЫ
+    function applyTheme(theme) { document.body.className = theme; localStorage.setItem('theme', theme); }
     const savedTheme = localStorage.getItem('theme') || 'dark';
     applyTheme(savedTheme);
 </script>
