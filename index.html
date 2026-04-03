@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>CASINO·LUCK</title>
+    <title>OFFICIALCASUAL</title>
     <style>
         * {
             box-sizing: border-box;
@@ -271,7 +271,7 @@
             </label>
         </div>
     </div>
-    <footer>⚡ CASINO·LUCK · Демо-режим</footer>
+    <footer>⚡ OFFICIALCASUAL · Демо-режим</footer>
 </div>
 
 <!-- МИНЫ -->
@@ -377,9 +377,9 @@
         btn.onclick = () => showMain();
     });
 
-    // ========== МИНЫ (с перевесом казино) ==========
+    // ========== МИНЫ ==========
     let minesState = { active: false, difficulty: 'medium', board: [], revealed: [], bet: 0, currentWin: 0, gameOver: false, totalMines: 5 };
-    const minesCount = { easy: 4, medium: 7, hard: 10 };  // больше мин
+    const minesCount = { easy: 4, medium: 7, hard: 10 };
     const minesMultipliers = {
         easy: [1, 1.1, 1.2, 1.3, 1.5, 1.7, 2.0, 2.3, 2.7, 3.2, 3.8, 4.5, 5.3, 6.2, 7.2],
         medium: [1, 1.1, 1.2, 1.3, 1.5, 1.7, 2.0, 2.3, 2.7, 3.2, 3.8, 4.5, 5.3, 6.2, 7.2],
@@ -438,7 +438,7 @@
     document.querySelector('#minesPage .diff-btn[data-diff="medium"]').classList.add('active');
     renderMinesGrid();
 
-    // ========== КРАШ (более частый краш) ==========
+    // ========== КРАШ ==========
     let crashInterval = null;
     function startCrash() {
         if (crashInterval) return;
@@ -446,7 +446,7 @@
         if (isNaN(bet) || bet <= 0) bet = 10;
         if (bet > demoCoins) { tg.showAlert('❌ Не хватает монет'); return; }
         demoCoins -= bet; saveDemoCoins();
-        let crashPoint = 1 + Math.random() * 4;  // краш между 1.0 и 5.0 (раньше)
+        let crashPoint = 1 + Math.random() * 4;
         let multiplier = 1;
         document.getElementById('crashMultiplier').innerText = multiplier.toFixed(2) + 'x';
         document.getElementById('cashoutCrashBtn').style.display = 'block';
@@ -461,7 +461,7 @@
     document.getElementById('startCrashBtn').onclick = startCrash;
     document.getElementById('cashoutCrashBtn').onclick = cashoutCrash;
 
-    // ========== РУЛЕТКА (перевес казино) ==========
+    // ========== РУЛЕТКА ==========
     let rouletteSpinning = false;
     const rouletteOutcomes = [
         { multiplier: 0, weight: 45, color: "#2c3e50", name: "0x" },
@@ -515,43 +515,6 @@
         ctx.fillStyle = "#f1c40f";
         ctx.fill();
     }
-    function spinRoulette() {
-        if (rouletteSpinning) return;
-        let bet = parseInt(document.getElementById('rouletteBet').value);
-        if (isNaN(bet) || bet <= 0) bet = 100;
-        if (bet > demoCoins) { tg.showAlert("❌ Не хватает монет!"); return; }
-        demoCoins -= bet;
-        saveDemoCoins();
-        updateUI();
-        rouletteSpinning = true;
-        const outcome = getRandomOutcome();
-        const winAmount = outcome.multiplier * bet;
-        const totalFrames = 30;
-        let frame = 0;
-        const spinInterval = setInterval(() => {
-            frame++;
-            const fakeAngle = (frame * 45) % 360;
-            drawRouletteAtAngle(fakeAngle);
-            if (frame >= totalFrames) {
-                clearInterval(spinInterval);
-                const targetIndex = rouletteOutcomes.findIndex(o => o.multiplier === outcome.multiplier);
-                drawRouletteAtAngle(targetIndex * 45);
-                let message;
-                if (winAmount > 0) {
-                    demoCoins += winAmount;
-                    saveDemoCoins();
-                    updateUI();
-                    message = `🎉 ВЫИГРЫШ! ${winAmount} монет (x${outcome.multiplier})`;
-                    vibrate();
-                } else {
-                    message = `💔 ПРОИГРЫШ. Выпал 0x`;
-                }
-                document.getElementById('rouletteResult').innerHTML = message;
-                tg.showAlert(message);
-                rouletteSpinning = false;
-            }
-        }, 40);
-    }
     function drawRouletteAtAngle(angle) {
         const canvas = document.getElementById('rouletteCanvas');
         if (!canvas) return;
@@ -585,10 +548,57 @@
         ctx.fillStyle = "#f1c40f";
         ctx.fill();
     }
+    function spinRoulette() {
+        if (rouletteSpinning) return;
+        let bet = parseInt(document.getElementById('rouletteBet').value);
+        if (isNaN(bet) || bet <= 0) bet = 100;
+        if (bet > demoCoins) { tg.showAlert("❌ Не хватает монет!"); return; }
+        demoCoins -= bet;
+        saveDemoCoins();
+        updateUI();
+        rouletteSpinning = true;
+        const outcome = getRandomOutcome();
+        const winAmount = outcome.multiplier * bet;
+        const targetSectorIndex = rouletteOutcomes.findIndex(o => o.multiplier === outcome.multiplier);
+        const sectorsCount = rouletteOutcomes.length;
+        const sectorAngle = 360 / sectorsCount;
+        const stopAngle = (targetSectorIndex * sectorAngle + sectorAngle/2) % 360;
+        const fullSpins = 8;
+        const totalFrames = 80;
+        let frame = 0;
+        function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+        function animate() {
+            frame++;
+            let progress = frame / totalFrames;
+            if (progress > 1) progress = 1;
+            const easedProgress = easeOutCubic(progress);
+            const currentAngle = (0 + fullSpins * 360 + stopAngle * easedProgress) % 360;
+            drawRouletteAtAngle(currentAngle);
+            if (frame < totalFrames) {
+                requestAnimationFrame(animate);
+            } else {
+                drawRouletteAtAngle(stopAngle);
+                let message;
+                if (winAmount > 0) {
+                    demoCoins += winAmount;
+                    saveDemoCoins();
+                    updateUI();
+                    message = `🎉 ВЫИГРЫШ! ${winAmount} монет (x${outcome.multiplier})`;
+                    vibrate();
+                } else {
+                    message = `💔 ПРОИГРЫШ. Выпал 0x`;
+                }
+                document.getElementById('rouletteResult').innerHTML = message;
+                tg.showAlert(message);
+                rouletteSpinning = false;
+            }
+        }
+        requestAnimationFrame(animate);
+    }
     document.getElementById('spinRouletteBtn').onclick = spinRoulette;
     drawRoulette();
 
-    // ========== МОНЕТКА (45% на выигрыш) ==========
+    // ========== МОНЕТКА ==========
     function coinPlay(choice) {
         let bet = parseInt(document.getElementById('coinBet').value);
         if (isNaN(bet) || bet <= 0) bet = 10;
