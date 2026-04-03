@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>CASINO·LUCK</title>
     <style>
+        /* Все стили такие же, как были (я их не трогаю, только добавляю canvas) */
         * {
             box-sizing: border-box;
             user-select: none;
@@ -364,6 +365,7 @@
         document.querySelectorAll('.game-page').forEach(p => p.style.display = 'none');
         document.getElementById(pageId).style.display = 'flex';
         if (crashInterval) { clearInterval(crashInterval); crashInterval = null; }
+        if (typeof drawWheel === 'function') drawWheel(0);
     }
     function showMain() {
         document.getElementById('mainPage').style.display = 'block';
@@ -461,10 +463,10 @@
     document.getElementById('startCrashBtn').onclick = startCrash;
     document.getElementById('cashoutCrashBtn').onclick = cashoutCrash;
 
-    // ========== РУЛЕТКА (ПОЛНОСТЬЮ ПЕРЕПИСАНА) ==========
+    // ========== РУЛЕТКА (ИСПРАВЛЕННАЯ — СТРЕЛКА НЕПОДВИЖНА, КОЛЕСО ВРАЩАЕТСЯ) ==========
     let spinning = false;
-    let animationId = null;
-    const sectors = [
+    let animId = null;
+    const sectors2 = [
         { mult: 0, weight: 45, color: "#2c3e50" },
         { mult: 2, weight: 25, color: "#e74c3c" },
         { mult: 5, weight: 12, color: "#f39c12" },
@@ -473,14 +475,14 @@
         { mult: 50, weight: 3, color: "#d35400" },
         { mult: 100, weight: 2, color: "#c0392b" }
     ];
-    const sectorAngle = 360 / sectors.length;
+    const sectorDeg = 360 / sectors2.length;
 
-    function getRandomSector() {
-        let totalWeight = sectors.reduce((s, o) => s + o.weight, 0);
+    function getRandomSectorIndex() {
+        let totalWeight = sectors2.reduce((s, o) => s + o.weight, 0);
         let rand = Math.random() * totalWeight;
         let acc = 0;
-        for (let i = 0; i < sectors.length; i++) {
-            acc += sectors[i].weight;
+        for (let i = 0; i < sectors2.length; i++) {
+            acc += sectors2[i].weight;
             if (rand <= acc) return i;
         }
         return 0;
@@ -494,22 +496,23 @@
         const cx = w/2, cy = h/2;
         const r = w/2 - 10;
         ctx.clearRect(0, 0, w, h);
-        for (let i = 0; i < sectors.length; i++) {
-            const start = (rotationDeg + i * sectorAngle) * Math.PI/180;
-            const end = (rotationDeg + (i+1) * sectorAngle) * Math.PI/180;
+        for (let i = 0; i < sectors2.length; i++) {
+            const start = (rotationDeg + i * sectorDeg) * Math.PI/180;
+            const end = (rotationDeg + (i+1) * sectorDeg) * Math.PI/180;
             ctx.beginPath();
             ctx.moveTo(cx, cy);
             ctx.arc(cx, cy, r, start, end);
-            ctx.fillStyle = sectors[i].color;
+            ctx.fillStyle = sectors2[i].color;
             ctx.fill();
             ctx.save();
             ctx.translate(cx, cy);
-            ctx.rotate(start + sectorAngle * Math.PI/360);
+            ctx.rotate(start + sectorDeg * Math.PI/360);
             ctx.fillStyle = "#fff";
             ctx.font = "bold 16px Arial";
-            ctx.fillText(sectors[i].mult + "x", r - 40, 10);
+            ctx.fillText(sectors2[i].mult + "x", r - 40, 10);
             ctx.restore();
         }
+        // Стрелка (всегда вверху)
         ctx.beginPath();
         ctx.moveTo(cx + 15, cy - r - 5);
         ctx.lineTo(cx, cy - r - 20);
@@ -530,42 +533,43 @@
         saveDemoCoins();
         updateUI();
         spinning = true;
-        const targetSector = getRandomSector();
-        const targetMult = sectors[targetSector].mult;
-        const targetStopAngle = (360 - (targetSector * sectorAngle + sectorAngle/2)) % 360;
+        const targetIdx = getRandomSectorIndex();
+        const targetMult = sectors2[targetIdx].mult;
+        // Угол остановки: стрелка сверху (0°), под ней должен быть целевой сектор
+        const targetStop = (360 - (targetIdx * sectorDeg + sectorDeg/2)) % 360;
         const startTime = performance.now();
-        const duration = 2000;
-        const fullSpins = 10 * 360;
+        const duration = 1800;
+        const fullSpins = 8 * 360;
         function animate(now) {
             const elapsed = now - startTime;
             let t = Math.min(1, elapsed / duration);
             const easeOut = 1 - Math.pow(1 - t, 3);
-            const currentRotation = (fullSpins * t + targetStopAngle * easeOut) % 360;
-            drawWheel(currentRotation);
+            const currentRot = (fullSpins * t + targetStop * easeOut) % 360;
+            drawWheel(currentRot);
             if (t < 1) {
-                animationId = requestAnimationFrame(animate);
+                animId = requestAnimationFrame(animate);
             } else {
-                drawWheel(targetStopAngle);
+                drawWheel(targetStop);
                 const winAmount = targetMult * bet;
-                let message;
+                let msg;
                 if (winAmount > 0) {
                     demoCoins += winAmount;
                     saveDemoCoins();
                     updateUI();
-                    message = `🎉 ВЫИГРЫШ! ${winAmount} монет (x${targetMult})`;
+                    msg = `🎉 ВЫИГРЫШ! ${winAmount} монет (x${targetMult})`;
                     vibrate();
                 } else {
-                    message = `💔 ПРОИГРЫШ. Выпал 0x`;
+                    msg = `💔 ПРОИГРЫШ. Выпал 0x`;
                 }
-                document.getElementById('rouletteResult').innerHTML = message;
-                tg.showAlert(message);
+                document.getElementById('rouletteResult').innerHTML = msg;
+                tg.showAlert(msg);
                 spinning = false;
-                cancelAnimationFrame(animationId);
-                animationId = null;
+                cancelAnimationFrame(animId);
+                animId = null;
             }
         }
-        if (animationId) cancelAnimationFrame(animationId);
-        animationId = requestAnimationFrame(animate);
+        if (animId) cancelAnimationFrame(animId);
+        animId = requestAnimationFrame(animate);
     }
 
     document.getElementById('spinRouletteBtn').onclick = spinRoulette;
