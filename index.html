@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>OFFICIALCASUAL</title>
     <style>
-        /* Все стили такие же, как были (я их не трогаю, только добавляю canvas) */
         * {
             box-sizing: border-box;
             user-select: none;
@@ -288,7 +287,7 @@
 <div class="card"><div class="bet-control"><span>Ставка:</span><input type="number" id="crashBet" class="bet-input" value="10" step="5"><button id="startCrashBtn" class="primary-btn crash-start-margin">📈 Запустить</button></div>
 <div class="crash-number" id="crashMultiplier">1.00x</div><button id="cashoutCrashBtn" style="display:none; width:100%;" class="primary-btn">✅ ЗАБРАТЬ</button><div id="crashStatus" class="win-text"></div></div></div>
 
-<!-- РУЛЕТКА (ИСПРАВЛЕННАЯ) -->
+<!-- РУЛЕТКА -->
 <div id="roulettePage" class="game-page"><div class="game-header"><span class="game-title">🎡 РУЛЕТКА</span><button class="exit-btn" data-exit="roulette">✕ Выйти</button></div>
 <div class="card"><div class="bet-control"><span>Ставка:</span><input type="number" id="rouletteBet" class="bet-input" value="100" step="10"><button id="spinRouletteBtn" class="primary-btn">🎡 КРУТИТЬ</button></div>
 <canvas id="rouletteCanvas" width="400" height="400"></canvas>
@@ -379,7 +378,7 @@
         btn.onclick = () => showMain();
     });
 
-    // ========== МИНЫ ==========
+    // ========== МИНЫ (перевес казино, но есть шанс выиграть) ==========
     let minesState = { active: false, difficulty: 'medium', board: [], revealed: [], bet: 0, currentWin: 0, gameOver: false, totalMines: 5 };
     const minesCount = { easy: 4, medium: 7, hard: 10 };
     const minesMultipliers = {
@@ -440,7 +439,7 @@
     document.querySelector('#minesPage .diff-btn[data-diff="medium"]').classList.add('active');
     renderMinesGrid();
 
-    // ========== КРАШ ==========
+    // ========== КРАШ (честный, с перевесом казино) ==========
     let crashInterval = null;
     function startCrash() {
         if (crashInterval) return;
@@ -448,13 +447,20 @@
         if (isNaN(bet) || bet <= 0) bet = 10;
         if (bet > demoCoins) { tg.showAlert('❌ Не хватает монет'); return; }
         demoCoins -= bet; saveDemoCoins();
-        let crashPoint = 1 + Math.random() * 4;
+        let crashPoint = 1 + Math.random() * 4; // краш от 1.0 до 5.0
         let multiplier = 1;
         document.getElementById('crashMultiplier').innerText = multiplier.toFixed(2) + 'x';
         document.getElementById('cashoutCrashBtn').style.display = 'block';
         crashInterval = setInterval(() => {
             multiplier += 0.05;
-            if (multiplier >= crashPoint) { clearInterval(crashInterval); crashInterval = null; document.getElementById('crashMultiplier').innerText = '💥 КРАШ!'; document.getElementById('cashoutCrashBtn').style.display = 'none'; document.getElementById('crashStatus').innerHTML = '💥 Проигрыш!'; vibrate(); return; }
+            if (multiplier >= crashPoint) {
+                clearInterval(crashInterval); crashInterval = null;
+                document.getElementById('crashMultiplier').innerText = '💥 КРАШ!';
+                document.getElementById('cashoutCrashBtn').style.display = 'none';
+                document.getElementById('crashStatus').innerHTML = '💥 Проигрыш!';
+                vibrate();
+                return;
+            }
             document.getElementById('crashMultiplier').innerText = multiplier.toFixed(2) + 'x';
             document.getElementById('cashoutCrashBtn').innerText = `✅ ЗАБРАТЬ ${multiplier.toFixed(2)}x`;
         }, 150);
@@ -463,11 +469,11 @@
     document.getElementById('startCrashBtn').onclick = startCrash;
     document.getElementById('cashoutCrashBtn').onclick = cashoutCrash;
 
-    // ========== РУЛЕТКА (ИСПРАВЛЕННАЯ — СТРЕЛКА НЕПОДВИЖНА, КОЛЕСО ВРАЩАЕТСЯ) ==========
+    // ========== РУЛЕТКА (перевес, но иногда везёт) ==========
     let spinning = false;
     let animId = null;
     const sectors2 = [
-        { mult: 0, weight: 45, color: "#2c3e50" },
+        { mult: 0, weight: 45, color: "#2c3e50" },   // 45% проигрыш
         { mult: 2, weight: 25, color: "#e74c3c" },
         { mult: 5, weight: 12, color: "#f39c12" },
         { mult: 10, weight: 8, color: "#27ae60" },
@@ -512,7 +518,6 @@
             ctx.fillText(sectors2[i].mult + "x", r - 40, 10);
             ctx.restore();
         }
-        // Стрелка (всегда вверху)
         ctx.beginPath();
         ctx.moveTo(cx + 15, cy - r - 5);
         ctx.lineTo(cx, cy - r - 20);
@@ -535,7 +540,6 @@
         spinning = true;
         const targetIdx = getRandomSectorIndex();
         const targetMult = sectors2[targetIdx].mult;
-        // Угол остановки: стрелка сверху (0°), под ней должен быть целевой сектор
         const targetStop = (360 - (targetIdx * sectorDeg + sectorDeg/2)) % 360;
         const startTime = performance.now();
         const duration = 1800;
@@ -575,7 +579,7 @@
     document.getElementById('spinRouletteBtn').onclick = spinRoulette;
     drawWheel(0);
 
-    // ========== МОНЕТКА ==========
+    // ========== МОНЕТКА (45% выигрыш) ==========
     function coinPlay(choice) {
         let bet = parseInt(document.getElementById('coinBet').value);
         if (isNaN(bet) || bet <= 0) bet = 10;
