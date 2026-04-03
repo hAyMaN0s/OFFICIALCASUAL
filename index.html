@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>OFFICIALCASUAL</title>
+    <title>CASINO·LUCK</title>
     <style>
         * {
             box-sizing: border-box;
@@ -202,9 +202,9 @@
 
         .settings-panel {
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
             gap: 16px;
         }
         .theme-btns { display: flex; gap: 8px; }
@@ -222,6 +222,51 @@
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+        /* Переключатель Демо/Реал */
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.2s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.2s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #facc15;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
         }
         #rouletteCanvas {
             width: 100%;
@@ -270,9 +315,17 @@
             <label class="vibration-label">
                 <input type="checkbox" id="vibrationToggle" checked> 📳 Вибрация
             </label>
+            <div class="toggle-switch">
+                <span>🎮 Демо</span>
+                <label class="switch">
+                    <input type="checkbox" id="realModeToggle">
+                    <span class="slider round"></span>
+                </label>
+                <span>💰 Реал</span>
+            </div>
         </div>
     </div>
-    <footer>⚡ OFFICIALCASUAL · Демо-режим</footer>
+    <footer>⚡ CASINO·LUCK · Демо-режим</footer>
 </div>
 
 <!-- МИНЫ -->
@@ -304,7 +357,25 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // БАЛАНСЫ
+    // ========== РЕЖИМ ДЕМО / РЕАЛ ==========
+    let realMode = localStorage.getItem('realMode') === 'true';
+    const realModeToggle = document.getElementById('realModeToggle');
+    if (realModeToggle) realModeToggle.checked = realMode;
+
+    function updateGameMode() {
+        if (realMode) {
+            tg.showAlert("🔐 Режим реальных денег в разработке. Скоро вы сможете пополнить USDT, TRX или BTC и выводить выигрыши!");
+        }
+        // Здесь позже будет переключение между балансами
+    }
+    realModeToggle?.addEventListener('change', (e) => {
+        realMode = e.target.checked;
+        localStorage.setItem('realMode', realMode);
+        updateGameMode();
+    });
+    updateGameMode();
+
+    // ========== БАЛАНСЫ ==========
     let demoCoins = parseInt(localStorage.getItem('demoCoins') || '1000');
     let realBalance = { RUB: 0, USD: 0, EUR: 0 };
     let currentCurrency = localStorage.getItem('currentCurrency') || 'RUB';
@@ -330,7 +401,7 @@
     document.querySelector('.currency-btn[data-cur="RUB"]').classList.add('active');
     updateUI();
 
-    // НАСТРОЙКИ
+    // ========== НАСТРОЙКИ ==========
     let settings = {
         theme: localStorage.getItem('theme') || 'dark',
         vibration: localStorage.getItem('vibration') !== 'false'
@@ -358,7 +429,7 @@
     }
     applyTheme(settings.theme);
 
-    // НАВИГАЦИЯ
+    // ========== НАВИГАЦИЯ ==========
     function showPage(pageId) {
         document.getElementById('mainPage').style.display = 'none';
         document.querySelectorAll('.game-page').forEach(p => p.style.display = 'none');
@@ -378,7 +449,7 @@
         btn.onclick = () => showMain();
     });
 
-    // ========== МИНЫ (перевес казино, но есть шанс выиграть) ==========
+    // ========== МИНЫ ==========
     let minesState = { active: false, difficulty: 'medium', board: [], revealed: [], bet: 0, currentWin: 0, gameOver: false, totalMines: 5 };
     const minesCount = { easy: 4, medium: 7, hard: 10 };
     const minesMultipliers = {
@@ -439,7 +510,7 @@
     document.querySelector('#minesPage .diff-btn[data-diff="medium"]').classList.add('active');
     renderMinesGrid();
 
-    // ========== КРАШ (честный, с перевесом казино) ==========
+    // ========== КРАШ ==========
     let crashInterval = null;
     function startCrash() {
         if (crashInterval) return;
@@ -447,7 +518,7 @@
         if (isNaN(bet) || bet <= 0) bet = 10;
         if (bet > demoCoins) { tg.showAlert('❌ Не хватает монет'); return; }
         demoCoins -= bet; saveDemoCoins();
-        let crashPoint = 1 + Math.random() * 4; // краш от 1.0 до 5.0
+        let crashPoint = 1 + Math.random() * 4;
         let multiplier = 1;
         document.getElementById('crashMultiplier').innerText = multiplier.toFixed(2) + 'x';
         document.getElementById('cashoutCrashBtn').style.display = 'block';
@@ -469,11 +540,11 @@
     document.getElementById('startCrashBtn').onclick = startCrash;
     document.getElementById('cashoutCrashBtn').onclick = cashoutCrash;
 
-    // ========== РУЛЕТКА (перевес, но иногда везёт) ==========
+    // ========== РУЛЕТКА ==========
     let spinning = false;
     let animId = null;
     const sectors2 = [
-        { mult: 0, weight: 45, color: "#2c3e50" },   // 45% проигрыш
+        { mult: 0, weight: 45, color: "#2c3e50" },
         { mult: 2, weight: 25, color: "#e74c3c" },
         { mult: 5, weight: 12, color: "#f39c12" },
         { mult: 10, weight: 8, color: "#27ae60" },
@@ -579,7 +650,7 @@
     document.getElementById('spinRouletteBtn').onclick = spinRoulette;
     drawWheel(0);
 
-    // ========== МОНЕТКА (45% выигрыш) ==========
+    // ========== МОНЕТКА ==========
     function coinPlay(choice) {
         let bet = parseInt(document.getElementById('coinBet').value);
         if (isNaN(bet) || bet <= 0) bet = 10;
