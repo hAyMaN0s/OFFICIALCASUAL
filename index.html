@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>OFFICIALCASUAL</title>
+    <title>CASINO·LUCK</title>
     <style>
         * {
             box-sizing: border-box;
@@ -231,6 +231,7 @@
             border-radius: 50%;
             margin: 0 auto;
             display: block;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -271,7 +272,7 @@
             </label>
         </div>
     </div>
-    <footer>⚡ OFFICIALCASUAL · Демо-режим</footer>
+    <footer>⚡ CASINO·LUCK · Демо-режим</footer>
 </div>
 
 <!-- МИНЫ -->
@@ -286,7 +287,7 @@
 <div class="card"><div class="bet-control"><span>Ставка:</span><input type="number" id="crashBet" class="bet-input" value="10" step="5"><button id="startCrashBtn" class="primary-btn crash-start-margin">📈 Запустить</button></div>
 <div class="crash-number" id="crashMultiplier">1.00x</div><button id="cashoutCrashBtn" style="display:none; width:100%;" class="primary-btn">✅ ЗАБРАТЬ</button><div id="crashStatus" class="win-text"></div></div></div>
 
-<!-- РУЛЕТКА -->
+<!-- РУЛЕТКА (ИСПРАВЛЕННАЯ) -->
 <div id="roulettePage" class="game-page"><div class="game-header"><span class="game-title">🎡 РУЛЕТКА</span><button class="exit-btn" data-exit="roulette">✕ Выйти</button></div>
 <div class="card"><div class="bet-control"><span>Ставка:</span><input type="number" id="rouletteBet" class="bet-input" value="100" step="10"><button id="spinRouletteBtn" class="primary-btn">🎡 КРУТИТЬ</button></div>
 <canvas id="rouletteCanvas" width="400" height="400"></canvas>
@@ -363,7 +364,6 @@
         document.querySelectorAll('.game-page').forEach(p => p.style.display = 'none');
         document.getElementById(pageId).style.display = 'flex';
         if (crashInterval) { clearInterval(crashInterval); crashInterval = null; }
-        if (typeof drawRoulette === 'function') drawRoulette();
     }
     function showMain() {
         document.getElementById('mainPage').style.display = 'block';
@@ -461,142 +461,115 @@
     document.getElementById('startCrashBtn').onclick = startCrash;
     document.getElementById('cashoutCrashBtn').onclick = cashoutCrash;
 
-    // ========== РУЛЕТКА ==========
-    let rouletteSpinning = false;
-    const rouletteOutcomes = [
-        { multiplier: 0, weight: 45, color: "#2c3e50", name: "0x" },
-        { multiplier: 2, weight: 25, color: "#e74c3c", name: "2x" },
-        { multiplier: 5, weight: 12, color: "#f39c12", name: "5x" },
-        { multiplier: 10, weight: 8, color: "#27ae60", name: "10x" },
-        { multiplier: 20, weight: 5, color: "#8e44ad", name: "20x" },
-        { multiplier: 50, weight: 3, color: "#d35400", name: "50x" },
-        { multiplier: 100, weight: 2, color: "#c0392b", name: "100x" }
+    // ========== РУЛЕТКА (ПОЛНОСТЬЮ ПЕРЕПИСАНА) ==========
+    let spinning = false;
+    let animationId = null;
+    const sectors = [
+        { mult: 0, weight: 45, color: "#2c3e50" },
+        { mult: 2, weight: 25, color: "#e74c3c" },
+        { mult: 5, weight: 12, color: "#f39c12" },
+        { mult: 10, weight: 8, color: "#27ae60" },
+        { mult: 20, weight: 5, color: "#8e44ad" },
+        { mult: 50, weight: 3, color: "#d35400" },
+        { mult: 100, weight: 2, color: "#c0392b" }
     ];
-    function getRandomOutcome() {
-        let totalWeight = rouletteOutcomes.reduce((sum, o) => sum + o.weight, 0);
-        let random = Math.random() * totalWeight;
+    const sectorAngle = 360 / sectors.length;
+
+    function getRandomSector() {
+        let totalWeight = sectors.reduce((s, o) => s + o.weight, 0);
+        let rand = Math.random() * totalWeight;
         let acc = 0;
-        for (let outcome of rouletteOutcomes) {
-            acc += outcome.weight;
-            if (random <= acc) return outcome;
+        for (let i = 0; i < sectors.length; i++) {
+            acc += sectors[i].weight;
+            if (rand <= acc) return i;
         }
-        return rouletteOutcomes[0];
+        return 0;
     }
-    function drawRoulette() {
+
+    function drawWheel(rotationDeg = 0) {
         const canvas = document.getElementById('rouletteCanvas');
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
         const w = canvas.width, h = canvas.height;
-        const centerX = w/2, centerY = h/2;
-        const radius = w/2 - 10;
+        const cx = w/2, cy = h/2;
+        const r = w/2 - 10;
         ctx.clearRect(0, 0, w, h);
-        let startAngle = 0;
-        const angleStep = 360 / rouletteOutcomes.length;
-        rouletteOutcomes.forEach((outcome, i) => {
-            const endAngle = startAngle + angleStep;
+        for (let i = 0; i < sectors.length; i++) {
+            const start = (rotationDeg + i * sectorAngle) * Math.PI/180;
+            const end = (rotationDeg + (i+1) * sectorAngle) * Math.PI/180;
             ctx.beginPath();
-            ctx.moveTo(centerX, centerY);
-            ctx.arc(centerX, centerY, radius, startAngle * Math.PI/180, endAngle * Math.PI/180);
-            ctx.fillStyle = outcome.color;
+            ctx.moveTo(cx, cy);
+            ctx.arc(cx, cy, r, start, end);
+            ctx.fillStyle = sectors[i].color;
             ctx.fill();
             ctx.save();
-            ctx.translate(centerX, centerY);
-            ctx.rotate((startAngle + angleStep/2) * Math.PI/180);
+            ctx.translate(cx, cy);
+            ctx.rotate(start + sectorAngle * Math.PI/360);
             ctx.fillStyle = "#fff";
             ctx.font = "bold 16px Arial";
-            ctx.fillText(outcome.multiplier + "x", radius - 40, 10);
+            ctx.fillText(sectors[i].mult + "x", r - 40, 10);
             ctx.restore();
-            startAngle += angleStep;
-        });
+        }
         ctx.beginPath();
-        ctx.moveTo(centerX + 15, centerY - radius - 5);
-        ctx.lineTo(centerX, centerY - radius - 20);
-        ctx.lineTo(centerX - 15, centerY - radius - 5);
+        ctx.moveTo(cx + 15, cy - r - 5);
+        ctx.lineTo(cx, cy - r - 20);
+        ctx.lineTo(cx - 15, cy - r - 5);
         ctx.fillStyle = "#f1c40f";
         ctx.fill();
     }
-    function drawRouletteAtAngle(angle) {
-        const canvas = document.getElementById('rouletteCanvas');
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        const w = canvas.width, h = canvas.height;
-        const centerX = w/2, centerY = h/2;
-        const radius = w/2 - 10;
-        ctx.clearRect(0, 0, w, h);
-        let startAngle = angle;
-        const angleStep = 360 / rouletteOutcomes.length;
-        rouletteOutcomes.forEach((outcome, i) => {
-            const endAngle = startAngle + angleStep;
-            ctx.beginPath();
-            ctx.moveTo(centerX, centerY);
-            ctx.arc(centerX, centerY, radius, startAngle * Math.PI/180, endAngle * Math.PI/180);
-            ctx.fillStyle = outcome.color;
-            ctx.fill();
-            ctx.save();
-            ctx.translate(centerX, centerY);
-            ctx.rotate((startAngle + angleStep/2) * Math.PI/180);
-            ctx.fillStyle = "#fff";
-            ctx.font = "bold 16px Arial";
-            ctx.fillText(outcome.multiplier + "x", radius - 40, 10);
-            ctx.restore();
-            startAngle += angleStep;
-        });
-        ctx.beginPath();
-        ctx.moveTo(centerX + 15, centerY - radius - 5);
-        ctx.lineTo(centerX, centerY - radius - 20);
-        ctx.lineTo(centerX - 15, centerY - radius - 5);
-        ctx.fillStyle = "#f1c40f";
-        ctx.fill();
-    }
+
     function spinRoulette() {
-        if (rouletteSpinning) return;
+        if (spinning) return;
         let bet = parseInt(document.getElementById('rouletteBet').value);
         if (isNaN(bet) || bet <= 0) bet = 100;
-        if (bet > demoCoins) { tg.showAlert("❌ Не хватает монет!"); return; }
+        if (bet > demoCoins) {
+            tg.showAlert("❌ Не хватает монет!");
+            return;
+        }
         demoCoins -= bet;
         saveDemoCoins();
         updateUI();
-        rouletteSpinning = true;
-        const outcome = getRandomOutcome();
-        const winAmount = outcome.multiplier * bet;
-        const targetSectorIndex = rouletteOutcomes.findIndex(o => o.multiplier === outcome.multiplier);
-        const sectorsCount = rouletteOutcomes.length;
-        const sectorAngle = 360 / sectorsCount;
-        const stopAngle = (targetSectorIndex * sectorAngle + sectorAngle/2) % 360;
-        const fullSpins = 8;
-        const totalFrames = 80;
-        let frame = 0;
-        function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
-        function animate() {
-            frame++;
-            let progress = frame / totalFrames;
-            if (progress > 1) progress = 1;
-            const easedProgress = easeOutCubic(progress);
-            const currentAngle = (0 + fullSpins * 360 + stopAngle * easedProgress) % 360;
-            drawRouletteAtAngle(currentAngle);
-            if (frame < totalFrames) {
-                requestAnimationFrame(animate);
+        spinning = true;
+        const targetSector = getRandomSector();
+        const targetMult = sectors[targetSector].mult;
+        const targetStopAngle = (360 - (targetSector * sectorAngle + sectorAngle/2)) % 360;
+        const startTime = performance.now();
+        const duration = 2000;
+        const fullSpins = 10 * 360;
+        function animate(now) {
+            const elapsed = now - startTime;
+            let t = Math.min(1, elapsed / duration);
+            const easeOut = 1 - Math.pow(1 - t, 3);
+            const currentRotation = (fullSpins * t + targetStopAngle * easeOut) % 360;
+            drawWheel(currentRotation);
+            if (t < 1) {
+                animationId = requestAnimationFrame(animate);
             } else {
-                drawRouletteAtAngle(stopAngle);
+                drawWheel(targetStopAngle);
+                const winAmount = targetMult * bet;
                 let message;
                 if (winAmount > 0) {
                     demoCoins += winAmount;
                     saveDemoCoins();
                     updateUI();
-                    message = `🎉 ВЫИГРЫШ! ${winAmount} монет (x${outcome.multiplier})`;
+                    message = `🎉 ВЫИГРЫШ! ${winAmount} монет (x${targetMult})`;
                     vibrate();
                 } else {
                     message = `💔 ПРОИГРЫШ. Выпал 0x`;
                 }
                 document.getElementById('rouletteResult').innerHTML = message;
                 tg.showAlert(message);
-                rouletteSpinning = false;
+                spinning = false;
+                cancelAnimationFrame(animationId);
+                animationId = null;
             }
         }
-        requestAnimationFrame(animate);
+        if (animationId) cancelAnimationFrame(animationId);
+        animationId = requestAnimationFrame(animate);
     }
+
     document.getElementById('spinRouletteBtn').onclick = spinRoulette;
-    drawRoulette();
+    drawWheel(0);
 
     // ========== МОНЕТКА ==========
     function coinPlay(choice) {
