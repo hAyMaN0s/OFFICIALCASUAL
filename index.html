@@ -427,13 +427,13 @@
         btn.onclick = () => showMain();
     });
 
-    // МИНЫ
+    // МИНЫ (ИСПРАВЛЕННЫЕ МНОЖИТЕЛИ)
     let minesState = { active: false, difficulty: 'medium', board: [], revealed: [], bet: 0, currentWin: 0, gameOver: false };
     const minesCount = { easy: 3, medium: 10, hard: 24 };
     const minesMult = {
-        easy: [1, 1.2, 1.4, 1.7, 2.1, 2.6, 3.2, 3.9, 4.7, 5.6, 6.6, 7.7, 8.9, 10.2, 11.6],
-        medium: [1, 1.3, 1.7, 2.2, 2.8, 3.5, 4.3, 5.2, 6.2, 7.3, 8.5, 9.8, 11.2, 12.7, 14.3],
-        hard: [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384]
+        easy: [1, 1.1, 1.2, 1.4, 1.6, 1.9, 2.2, 2.6, 3.0, 3.5, 4.0, 4.6, 5.3, 6.0, 6.8, 7.2],
+        medium: [1, 1.3, 1.7, 2.2, 2.8, 3.5, 4.3, 5.2, 6.2, 7.3, 8.5, 9.8, 11.2, 12.7, 14.3, 16.0, 17.8, 19.7, 21.7, 22.0],
+        hard: [1, 2, 3, 5, 8, 12, 18, 26, 36, 48, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50]
     };
     function generateMines(diff) {
         let total = 25, mines = minesCount[diff];
@@ -710,7 +710,7 @@
     let freeSpinAvailable = true, freeSpinsLeft = 0, lastFreeSpin = parseInt(localStorage.getItem('lastFreeSpin') || '0');
     let promoUsed = localStorage.getItem('promoUsed') === 'true';
     const freePrizes = [100, 200, 500, 1000, 5000, 10000, 1000000];
-    const freeWeights = [80, 8, 4, 3, 2.5, 1.5, 1]; // 100 - 80%, 200 - 8%, 500 - 4%, 1000 - 3%, 5000 - 2.5%, 10000 - 1.5%, 1M - 0.5%
+    const freeWeights = [80, 8, 4, 3, 2.5, 1.5, 1];
     function getRandomPrize() {
         let total = freeWeights.reduce((a,b)=>a+b,0);
         let r = Math.random() * total;
