@@ -1,13 +1,3 @@
-Ты абсолютно прав — в предыдущей версии были серьёзные баги с отображением, адаптацией и логикой бесплатной рулетки. Я полностью переписал всё под **чёткие фиксированные размеры**, исправил визуализацию бесплатной рулетки, добавил отдельную кнопку «Запустить», исправил двойное окно и сделал всё отзывчивым под разные экраны.
-
-Вот **полностью рабочий, стабильный OFFICIALCASUAL**:
-
-- Все элементы фиксированы (не плывут).
-- Бесплатная рулетка: есть отдельное колесо, кнопка «Запустить», веса (80% на 100), промокод работает без двойного окна.
-- Краш, мины, монетка, рулетка — все функции на месте.
-- Темы, баланс, валюты работают.
-
-```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -206,7 +196,7 @@
             color: white;
         }
         .theme-btn.active { background: gold; color: black; }
-        .free-spin-card { text-align: center; cursor: pointer; }
+        .free-spin-card { text-align: center; }
         .canvas-wrapper {
             display: flex;
             justify-content: center;
@@ -719,6 +709,18 @@
     // БЕСПЛАТНАЯ РУЛЕТКА
     let freeSpinAvailable = true, freeSpinsLeft = 0, lastFreeSpin = parseInt(localStorage.getItem('lastFreeSpin') || '0');
     let promoUsed = localStorage.getItem('promoUsed') === 'true';
+    const freePrizes = [100, 200, 500, 1000, 5000, 10000, 1000000];
+    const freeWeights = [80, 8, 4, 3, 2.5, 1.5, 1]; // 100 - 80%, 200 - 8%, 500 - 4%, 1000 - 3%, 5000 - 2.5%, 10000 - 1.5%, 1M - 0.5%
+    function getRandomPrize() {
+        let total = freeWeights.reduce((a,b)=>a+b,0);
+        let r = Math.random() * total;
+        let acc = 0;
+        for(let i=0;i<freePrizes.length;i++){
+            acc += freeWeights[i];
+            if(r <= acc) return freePrizes[i];
+        }
+        return 100;
+    }
     function checkFreeSpin() {
         let now = Date.now();
         freeSpinAvailable = (now - lastFreeSpin > 86400000) || (freeSpinsLeft > 0);
@@ -727,25 +729,33 @@
         let mins = Math.floor((remain % 3600000) / 60000);
         document.getElementById('freeSpinTimer').innerHTML = freeSpinAvailable ? '✅ Доступна' : `⏳ Через ${hours}ч ${mins}мин`;
     }
+    let freeSpinAnim = null;
     function doFreeSpin() {
         if (!freeSpinAvailable && freeSpinsLeft <= 0) { tg.showAlert('❌ Бесплатные крутки закончились!'); return; }
         if (freeSpinAvailable && freeSpinsLeft <= 0) { lastFreeSpin = Date.now(); localStorage.setItem('lastFreeSpin', lastFreeSpin); }
         if (freeSpinsLeft > 0) { freeSpinsLeft--; localStorage.setItem('freeSpinsLeft', freeSpinsLeft); }
-        let r = Math.random();
-        let prize = 100;
-        if (r < 0.80) prize = 100;
-        else if (r < 0.88) prize = 200;
-        else if (r < 0.92) prize = 500;
-        else if (r < 0.95) prize = 1000;
-        else if (r < 0.975) prize = 5000;
-        else if (r < 0.99) prize = 10000;
-        else prize = 1000000;
-        demoCoins += prize;
-        saveDemoCoins();
-        tg.showAlert(`🎁 Бесплатная рулетка: +${prize} монет!`);
-        document.getElementById('freeSpinResult').innerHTML = `🎁 +${prize}`;
-        freeSpinAvailable = false;
-        checkFreeSpin();
+        let prize = getRandomPrize();
+        const targetStop = Math.random() * 360;
+        const start = performance.now(), duration = 1500;
+        if (freeSpinAnim) cancelAnimationFrame(freeSpinAnim);
+        function animate(now) {
+            let t = Math.min(1, (now - start) / duration);
+            let ease = 1 - Math.pow(1 - t, 3);
+            let rot = (8 * 360 * t + targetStop * ease) % 360;
+            drawWheel(rot, 'freeRouletteCanvas');
+            if (t < 1) freeSpinAnim = requestAnimationFrame(animate);
+            else {
+                drawWheel(targetStop, 'freeRouletteCanvas');
+                demoCoins += prize;
+                saveDemoCoins();
+                tg.showAlert(`🎁 Бесплатная рулетка: +${prize} монет!`);
+                document.getElementById('freeSpinResult').innerHTML = `🎁 +${prize}`;
+                freeSpinAvailable = false;
+                checkFreeSpin();
+                freeSpinAnim = null;
+            }
+        }
+        freeSpinAnim = requestAnimationFrame(animate);
     }
     function applyPromo() {
         let code = document.getElementById('promoCode').value.trim().toUpperCase();
@@ -770,4 +780,3 @@
 </script>
 </body>
 </html>
-```
