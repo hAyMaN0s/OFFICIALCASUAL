@@ -385,7 +385,7 @@
     });
     applyTheme(localStorage.getItem('theme') || 'dark');
 
-    // НЕВИДИМАЯ ЗАЩИТА БАЛАНСА (без уведомлений)
+    // НЕВИДИМАЯ ЗАЩИТА БАЛАНСА (без уведомлений) — для КРАШ, МОНЕТКА, РУЛЕТКА
     let lastCycle = parseInt(localStorage.getItem('balanceCycle') || '0');
     function applyBalanceProtection(bet, winAmount) {
         let now = Date.now();
@@ -425,11 +425,11 @@
         btn.onclick = () => showMain();
     });
 
-    // ========== МИНЫ (С ПРИНУДИТЕЛЬНЫМИ МИНАМИ ПОСЛЕ ЛИМИТА ХОДОВ) ==========
+    // ========== МИНЫ (БЕЗ ЗАЩИТЫ БАЛАНСА, ТОЛЬКО ПРИНУДИТЕЛЬНЫЕ МИНЫ) ==========
     let minesState = { active: false, difficulty: 'medium', board: [], revealed: [], bet: 0, currentWin: 0, gameOver: false };
     const minesCount = { easy: 3, medium: 10, hard: 24 };
-    const minesSafeSteps = { easy: 6, medium: 3, hard: 1 };   // ← лимит успешных ходов
-    let currentSafeSteps = 0;   // сколько уже успешно открыто
+    const minesSafeSteps = { easy: 3, medium: 3, hard: 1 };   // лимит успешных ходов до принудительной мины
+    let currentSafeSteps = 0;
     const minesMult = {
         easy: [1, 1.1, 1.2, 1.4, 1.6, 1.9, 2.2, 2.6, 3.0, 3.5, 4.0, 4.6, 5.3, 6.0, 6.8, 7.2],
         medium: [1, 1.3, 1.7, 2.2, 2.8, 3.5, 4.3, 5.2, 6.2, 7.3, 8.5, 9.8, 11.2, 12.7, 14.3, 16.0, 17.8, 19.7, 21.7, 22.0],
@@ -460,7 +460,7 @@
     function minesMove(idx) {
         if (!minesState.active || minesState.gameOver || minesState.revealed[idx]) return;
 
-        // ПРИНУДИТЕЛЬНАЯ МИНА, если достигнут лимит безопасных ходов
+        // Принудительная мина после лимита успешных ходов
         if (currentSafeSteps >= minesSafeSteps[minesState.difficulty]) {
             minesState.board[idx] = true;
         }
@@ -482,8 +482,8 @@
         document.getElementById('cashoutMinesBtn').style.display = 'block';
         renderMines();
         if (revealedCount === 25 - minesCount[minesState.difficulty]) {
-            let win = applyBalanceProtection(minesState.bet, minesState.currentWin);
-            demoCoins += win;
+            // выигрыш без защиты баланса
+            demoCoins += minesState.currentWin;
             saveDemoCoins();
             document.getElementById('minesStatus').innerHTML = '🏆 ПОБЕДА!';
             minesState.active = false;
@@ -501,7 +501,7 @@
             active: true, difficulty: diff, board: generateMines(diff), revealed: Array(25).fill(false),
             bet: bet, currentWin: 0, gameOver: false
         };
-        currentSafeSteps = 0;   // сбрасываем счётчик при старте
+        currentSafeSteps = 0;
         document.getElementById('minesWin').innerText = '0';
         document.getElementById('minesStatus').innerHTML = '🎲 Игра началась!';
         document.getElementById('cashoutMinesBtn').style.display = 'none';
@@ -509,10 +509,10 @@
     }
     function cashoutMines() {
         if (!minesState.active || minesState.gameOver) return;
-        let win = applyBalanceProtection(minesState.bet, minesState.currentWin);
-        demoCoins += win;
+        // выигрыш без защиты баланса
+        demoCoins += minesState.currentWin;
         saveDemoCoins();
-        tg.showAlert(`✅ Вы забрали ${win} монет!`);
+        tg.showAlert(`✅ Вы забрали ${minesState.currentWin} монет!`);
         minesState.active = false;
         document.getElementById('cashoutMinesBtn').style.display = 'none';
         renderMines();
