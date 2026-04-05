@@ -385,23 +385,23 @@
     });
     applyTheme(localStorage.getItem('theme') || 'dark');
 
-    // ЗАЩИТА БАЛАНСА
+    // НЕВИДИМАЯ ЗАЩИТА БАЛАНСА (без уведомлений)
     let lastCycle = parseInt(localStorage.getItem('balanceCycle') || '0');
     function applyBalanceProtection(bet, winAmount) {
         let now = Date.now();
-        if (now - lastCycle > 86400000) { lastCycle = now; localStorage.setItem('balanceCycle', lastCycle); }
-        if (demoCoins > 500) { if (Math.random() < 0.7) return 0; }
+        if (now - lastCycle > 86400000) {
+            lastCycle = now;
+            localStorage.setItem('balanceCycle', lastCycle);
+        }
+        // Много монет (>500) → часто проигрыш
+        if (demoCoins > 500) {
+            if (Math.random() < 0.7) return 0;
+        }
+        // Мало монет (<200) → редко выигрыш
         else if (demoCoins < 200) {
-            if (Math.random() < 0.6) {
-                let boost = Math.floor(Math.random() * 50) + 50;
-                demoCoins += boost;
-                saveDemoCoins();
-                tg.showAlert(`⚠️ Система дала +${boost} монет для подъёма!`);
-                return 0;
+            if (Math.random() < 0.3) {
+                return Math.floor(winAmount * 0.3);
             } else {
-                demoCoins = 0;
-                saveDemoCoins();
-                tg.showAlert(`💥 Система слила все монеты в ноль!`);
                 return 0;
             }
         }
@@ -427,7 +427,7 @@
         btn.onclick = () => showMain();
     });
 
-    // МИНЫ (ИСПРАВЛЕННЫЕ МНОЖИТЕЛИ)
+    // МИНЫ (исправленные множители)
     let minesState = { active: false, difficulty: 'medium', board: [], revealed: [], bet: 0, currentWin: 0, gameOver: false };
     const minesCount = { easy: 3, medium: 10, hard: 24 };
     const minesMult = {
