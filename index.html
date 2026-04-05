@@ -393,11 +393,9 @@
             lastCycle = now;
             localStorage.setItem('balanceCycle', lastCycle);
         }
-        // Много монет (>500) → часто проигрыш
         if (demoCoins > 500) {
             if (Math.random() < 0.7) return 0;
         }
-        // Мало монет (<200) → редко выигрыш
         else if (demoCoins < 200) {
             if (Math.random() < 0.3) {
                 return Math.floor(winAmount * 0.3);
@@ -427,9 +425,11 @@
         btn.onclick = () => showMain();
     });
 
-    // МИНЫ (исправленные множители)
+    // ========== МИНЫ (С ПРИНУДИТЕЛЬНЫМИ МИНАМИ ПОСЛЕ ЛИМИТА ХОДОВ) ==========
     let minesState = { active: false, difficulty: 'medium', board: [], revealed: [], bet: 0, currentWin: 0, gameOver: false };
     const minesCount = { easy: 3, medium: 10, hard: 24 };
+    const minesSafeSteps = { easy: 6, medium: 3, hard: 1 };   // ← лимит успешных ходов
+    let currentSafeSteps = 0;   // сколько уже успешно открыто
     const minesMult = {
         easy: [1, 1.1, 1.2, 1.4, 1.6, 1.9, 2.2, 2.6, 3.0, 3.5, 4.0, 4.6, 5.3, 6.0, 6.8, 7.2],
         medium: [1, 1.3, 1.7, 2.2, 2.8, 3.5, 4.3, 5.2, 6.2, 7.3, 8.5, 9.8, 11.2, 12.7, 14.3, 16.0, 17.8, 19.7, 21.7, 22.0],
@@ -459,14 +459,22 @@
     }
     function minesMove(idx) {
         if (!minesState.active || minesState.gameOver || minesState.revealed[idx]) return;
+
+        // ПРИНУДИТЕЛЬНАЯ МИНА, если достигнут лимит безопасных ходов
+        if (currentSafeSteps >= minesSafeSteps[minesState.difficulty]) {
+            minesState.board[idx] = true;
+        }
+
         if (minesState.board[idx]) {
-            minesState.gameOver = true; minesState.active = false;
+            minesState.gameOver = true;
+            minesState.active = false;
             document.getElementById('minesStatus').innerHTML = '💥 ВЗРЫВ! Вы проиграли.';
             document.getElementById('cashoutMinesBtn').style.display = 'none';
             renderMines();
             return;
         }
         minesState.revealed[idx] = true;
+        currentSafeSteps++;
         let revealedCount = minesState.revealed.filter(v => v === true).length;
         let mult = minesMult[minesState.difficulty][revealedCount] || 1;
         minesState.currentWin = Math.floor(minesState.bet * mult);
@@ -493,6 +501,7 @@
             active: true, difficulty: diff, board: generateMines(diff), revealed: Array(25).fill(false),
             bet: bet, currentWin: 0, gameOver: false
         };
+        currentSafeSteps = 0;   // сбрасываем счётчик при старте
         document.getElementById('minesWin').innerText = '0';
         document.getElementById('minesStatus').innerHTML = '🎲 Игра началась!';
         document.getElementById('cashoutMinesBtn').style.display = 'none';
