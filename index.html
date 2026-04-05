@@ -425,7 +425,7 @@
         btn.onclick = () => showMain();
     });
 
-    // ========== МИНЫ (С ПРИНУДИТЕЛЬНОЙ МИНОЙ ПОСЛЕ ЛИМИТА ХОДОВ) ==========
+    // ========== МИНЫ ==========
     let minesState = { active: false, difficulty: 'medium', board: [], revealed: [], bet: 0, currentWin: 0, gameOver: false };
     const minesCount = { easy: 3, medium: 10, hard: 24 };
     const minesSafeSteps = { easy: 3, medium: 3, hard: 1 };
@@ -479,7 +479,6 @@
         currentSafeSteps++;
 
         if (currentSafeSteps >= minesSafeSteps[minesState.difficulty]) {
-            // удаляем одну мину из поля
             let mineIndices = [];
             for (let i = 0; i < minesState.board.length; i++) {
                 if (minesState.board[i] === true) mineIndices.push(i);
@@ -544,26 +543,42 @@
     document.querySelector('#minesPage .diff-btn[data-diff="medium"]')?.classList.add('active');
     renderMines();
 
-    // КРАШ
+    // ========== КРАШ (С 0x) ==========
     let autoCrashActive = false, autoTarget = 1.5;
     function startCrash() {
         if (window.crashInterval) return;
         let bet = parseInt(document.getElementById('crashBet').value);
         if (isNaN(bet) || bet <= 0) bet = 10;
         if (bet > demoCoins) { tg.showAlert('❌ Не хватает монет'); return; }
-        demoCoins -= bet; saveDemoCoins();
+        demoCoins -= bet;
+        saveDemoCoins();
+        
         let r = Math.random();
-        let crashPoint = r < 0.6 ? 1.14 : (r < 0.8 ? 1.20 : (r < 0.95 ? 1.30 : (r < 0.98 ? 1.50 : 2 + Math.random() * 8)));
+        let crashPoint;
+        if (r < 0.15) crashPoint = 0;
+        else if (r < 0.45) crashPoint = 1.14;
+        else if (r < 0.70) crashPoint = 1.20;
+        else if (r < 0.90) crashPoint = 1.30;
+        else if (r < 0.98) crashPoint = 1.50;
+        else crashPoint = 2 + Math.random() * 8;
+        
         let multiplier = 1;
         document.getElementById('crashMultiplier').innerText = multiplier.toFixed(2) + 'x';
         document.getElementById('cashoutCrashBtn').style.display = 'block';
+        
         window.crashInterval = setInterval(() => {
             multiplier += 0.02;
             if (multiplier >= crashPoint) {
-                clearInterval(window.crashInterval); window.crashInterval = null;
-                document.getElementById('crashMultiplier').innerText = '💥 КРАШ!';
+                clearInterval(window.crashInterval);
+                window.crashInterval = null;
+                if (crashPoint === 0) {
+                    document.getElementById('crashMultiplier').innerText = '💥 КРАШ! 0x';
+                    document.getElementById('crashStatus').innerHTML = '💥 Проигрыш (0x)';
+                } else {
+                    document.getElementById('crashMultiplier').innerText = '💥 КРАШ!';
+                    document.getElementById('crashStatus').innerHTML = '💥 Проигрыш!';
+                }
                 document.getElementById('cashoutCrashBtn').style.display = 'none';
-                document.getElementById('crashStatus').innerHTML = '💥 Проигрыш!';
                 return;
             }
             document.getElementById('crashMultiplier').innerText = multiplier.toFixed(2) + 'x';
@@ -573,7 +588,8 @@
     }
     function cashoutCrash() {
         if (!window.crashInterval) return;
-        clearInterval(window.crashInterval); window.crashInterval = null;
+        clearInterval(window.crashInterval);
+        window.crashInterval = null;
         let mult = parseFloat(document.getElementById('crashMultiplier').innerText);
         let bet = parseInt(document.getElementById('crashBet').value);
         let win = Math.floor(mult * bet);
